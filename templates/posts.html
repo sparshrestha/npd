@@ -1,0 +1,7 @@
+<h2>Upload images shown and to <a href="/posts/post">add new</a></h2>
+<ul>
+	{% for post in object_list %}
+	<h3>{{ post.title }}</h3>
+	<img src="{{ post.cover.url }}" alt="{{ post.title }}">
+	{% endfor %}
+</ul>
