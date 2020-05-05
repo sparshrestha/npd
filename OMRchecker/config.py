@@ -76,6 +76,7 @@ CLR_DARK_GRAY = (100, 100, 100)
 
 MIN_PAGE_AREA = 80000
 
+
 # Filepaths
 class Paths:
     def __init__(self, output):

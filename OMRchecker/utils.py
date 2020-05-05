@@ -1163,9 +1163,10 @@ def readResponse(template, image, name, savedir=None, autoAlign=False):
                 savedir = savedir + '_MULTI_/'
             saveImg(savedir + name, final_marked)
 
-        if(config.showimglvl >= 1):
-            show("Final Marked Bubbles : " + name,
-                 resize_util_h(final_marked, int(config.display_height * 1.3)), 1, 1)
+        # By Pass Show Portion
+        # if(config.showimglvl >= 1):
+        #     show("Final Marked Bubbles : " + name,
+        #          resize_util_h(final_marked, int(config.display_height * 1.3)), 1, 1)
 
         appendSaveImg(2, final_marked)
 

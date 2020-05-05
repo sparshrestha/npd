@@ -293,7 +293,6 @@ def preliminary_check():
     #     show("Confirm : All bubbles are black",final_marked,1,1)
 
 
-
 def process_files(omr_files, template, args, out):
     start_time = int(time())
     filesCounter = 0
@@ -538,16 +537,35 @@ argparser.add_argument(
 
 args, unknown = argparser.parse_known_args()
 args = vars(args)
-if(len(unknown) > 0):
+if len(unknown) > 0:
     print("\nError: Unknown arguments:", unknown)
     argparser.print_help()
     exit(11)
+#
+# if args['template']:
+#     args['template'] = Template(args['template'])
+#
+# if args['input_dir'] is None:
+#     args['input_dir'] = ['inputs']
+#
+# for root in args['input_dir']:
+#     process_dir(root, '', args['template'])
 
-if args['template']:
-    args['template'] = Template(args['template'])
 
-if args['input_dir'] is None:
-    args['input_dir'] = ['inputs']
+# integration
 
-for root in args['input_dir']:
-    process_dir(root, '', args['template'])
+class OMRChecker:
+    def __init__(self, input_dir: list):
+        self.input_dir = input_dir
+
+    def execute(self):
+        if args['template']:
+            args['template'] = Template(args['template'])
+
+        args['input_dir'] = self.input_dir
+
+        for root in args['input_dir']:
+            process_dir(root, '', args['template'])
+
+
+OMRChecker(input_dir=['inputs']).execute()
