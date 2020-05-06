@@ -15,7 +15,7 @@ class HomePageView(ListView):
 
 def process_image(request):
 	print('----------called-------')
-	OMRChecker(input_dir=['{}/media/images'.format(BASE_DIR)]).execute()
+	OMRChecker(input_dir=[BASE_DIR+'/media/images']).execute()
 	return HttpResponseRedirect(reverse('home'))
 
 
