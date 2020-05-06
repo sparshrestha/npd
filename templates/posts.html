@@ -4,7 +4,7 @@
     {{ fm.as_p }}
 	{% for post in object_list %}
 	<h3>{{ post.title }}</h3>
-	<img src="{{ post.cover.url }}" alt="{{ post.title }}">
+	<img src="{{ post.cover.url }}" alt="{{ post.title }}" style="max-height: 256px; max-width: 256px">
 	{% endfor %}
     <hr><br>
     <input type="submit" value="Process">
