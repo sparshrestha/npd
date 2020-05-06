@@ -2,6 +2,7 @@ from django.http import HttpResponseRedirect
 from django.views.generic import ListView, CreateView
 from django.urls import reverse_lazy, reverse
 
+from GFoody.settings import BASE_DIR
 from OMRchecker import OMRChecker
 from .forms import PostForm
 from .models import Post
@@ -14,7 +15,7 @@ class HomePageView(ListView):
 
 def process_image(request):
 	print('----------called-------')
-	OMRChecker(input_dir=['/home/xzibit/Documents/Practice/npd/media/images']).execute()
+	OMRChecker(input_dir=['{}/media/images'.format(BASE_DIR)]).execute()
 	return HttpResponseRedirect(reverse('home'))
 
 
