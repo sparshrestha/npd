@@ -120,3 +120,8 @@ dmypy.json
 .pyre/
 
 # End of https://www.gitignore.io/api/django
+
+# file: ~/.gitignore_global
+.DS_Store
+.idea
+.idea/
