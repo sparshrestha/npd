@@ -15,11 +15,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import imutils
 
-import config
-import utils
-from template import Template
-
 # Local globals
+from OMRchecker import config, utils
+from OMRchecker.template import Template
+
 filesMoved=0
 filesNotMoved=0
 
@@ -35,6 +34,8 @@ from time import localtime, strftime, time
 
 def process_dir(root_dir, subdir, template):
     curr_dir = os.path.join(root_dir, subdir)
+    print('--------------------------------cur_dir')
+    print(curr_dir)
 
     # Look for template in current dir
     template_file = os.path.join(curr_dir, config.TEMPLATE_FILE)
@@ -537,10 +538,10 @@ argparser.add_argument(
 
 args, unknown = argparser.parse_known_args()
 args = vars(args)
-if len(unknown) > 0:
-    print("\nError: Unknown arguments:", unknown)
-    argparser.print_help()
-    exit(11)
+# if len(unknown) > 0:
+#     print("\nError: Unknown arguments:", unknown)
+#     argparser.print_help()
+#     exit(11)
 #
 # if args['template']:
 #     args['template'] = Template(args['template'])
@@ -565,7 +566,5 @@ class OMRChecker:
         args['input_dir'] = self.input_dir
 
         for root in args['input_dir']:
+            print(root)
             process_dir(root, '', args['template'])
-
-
-OMRChecker(input_dir=['inputs']).execute()

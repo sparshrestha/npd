@@ -1,6 +1,8 @@
+from django.http import HttpResponseRedirect
 from django.views.generic import ListView, CreateView
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 
+from OMRchecker import OMRChecker
 from .forms import PostForm
 from .models import Post
 
@@ -10,15 +12,10 @@ class HomePageView(ListView):
 	template_name = 'posts.html'
 
 
-def process_image(req):
-	form = PostForm(req.POST or None)
-	if form.is_valid():
-		form.save()
-		form = PostForm()
-	context = {
-		'fm': fm
-	}
-	return render(req, 'posts.html', context)
+def process_image(request):
+	print('----------called-------')
+	OMRChecker(input_dir=['/home/xzibit/Documents/Practice/npd/media/images']).execute()
+	return HttpResponseRedirect(reverse('home'))
 
 
 class CreatePostView(CreateView):

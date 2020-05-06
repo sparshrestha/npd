@@ -6,6 +6,8 @@ https://github.com/Udayraj123
 
 """
 # Locals
+from OMRchecker import config
+
 saveImgList = {}
 resetpos = [0,0]
 # for positioning image windows
@@ -26,8 +28,6 @@ from random import randint
 from imutils import grab_contours
 # from skimage.filters import threshold_adaptive
 
-import config
-import template
 
 def setup_dirs(paths):
     print('\nChecking Directories...')
@@ -1155,7 +1155,9 @@ def readResponse(template, image, name, savedir=None, autoAlign=False):
         if(config.showimglvl >= 3 and final_align is not None):
             final_align = resize_util_h(final_align, int(config.display_height))
             # [final_align.shape[1],0])
-            show("Template Alignment Adjustment", final_align, 0, 0)
+
+            # off this
+            # show("Template Alignment Adjustment", final_align, 0, 0)
 
         # TODO: refactor "type(savedir) != type(None) "
         if (config.saveMarked and type(savedir) != type(None)):

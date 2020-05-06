@@ -9,10 +9,9 @@ import cv2
 import os
 import json
 import numpy as np
-import config
-import utils
 
 ### Coordinates Part ###
+from OMRchecker import config, utils
 
 
 class Pt():

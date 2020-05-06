@@ -1,11 +1,9 @@
-<h2>Upload images shown and to <a href="/posts/post">add new</a></h2>
-<form method="post">
-    {% csrf_token %}
-    {{ fm.as_p }}
+<h2>Upload images shown and to <a href="{% url 'add_post' %}">add new</a></h2>
 	{% for post in object_list %}
 	<h3>{{ post.title }}</h3>
 	<img src="{{ post.cover.url }}" alt="{{ post.title }}">
 	{% endfor %}
     <hr><br>
-    <input type="submit" value="Process">
-</form>
+<a href="{% url 'process_images' %}">
+    <input class="favorite styled" type="button" value="Process Images">
+</a>
