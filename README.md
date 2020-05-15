@@ -15,4 +15,4 @@ running project
  
 python manage runserver
 
-[arch.jpg]
+![architecture](arch.jpg)
