@@ -14,3 +14,5 @@ sudo apt-get install -y libatlas-base-dev gfortran
 running project
  
 python manage runserver
+
+[arch.jpg]
