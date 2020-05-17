@@ -1,4 +1,4 @@
-activate your virtual env in root of this project
+activate your virtual env in root of this project using pipenv shell
 
 pip install django pillow
 pip install opencv-python opencv-contrib-python
@@ -13,6 +13,6 @@ sudo apt-get install -y libatlas-base-dev gfortran
 
 running project
  
-python manage runserver
+python manage.py runserver
 
 ![architecture](arch.jpg)
