@@ -21,6 +21,5 @@ class Post(models.Model):
     template = models.FileField(upload_to=template_upload_location, default=None)
     marker = models.ImageField(upload_to=template_upload_location, null=True, blank=True)
 
-
-def __str__(self):
-    return self.title
+    def __str__(self):
+        return self.title
