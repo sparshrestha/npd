@@ -1,20 +1,29 @@
 {% extends 'base.html' %}
 
-{% block title %} Your Home {% endblock %}
-
+{% block title %} Server Based Optical Mark Reader {% endblock %}
 {% block content %}
 {% if user.is_authenticated %}
 	<div style="text-align: center;">
+        <p><a href="/media/examtemplate/100/100.pdf" target="_blank">Download and Print 100 question answer sheet</a></p>
+        <p><a href="/media/examtemplate/40/40.pdf" target="_blank">Download and Print 40 question answer sheet</a></p>
+
 		Hello, {{ user.username }}! You are in :)
+        <p><a href="/posts"target="_blank">Create and Process Exams</a></p>
+        <p><a href="/admin"target="_blank">Admin Panel</a></p>
+
 		<p><a href="{% url 'logout' %}">logout</a></p>
 		<p><a href="{% url 'password_reset' %}">reset pwd</a></p>
 	</div>
 {% else %}
 	<div style="text-align: center;">
+    <p><a href="/media/examtemplate/100/100.pdf" target="_blank">Download and Print 100 question answer sheet</a></p>
+    <p><a href="/media/examtemplate/40/40.pdf" target="_blank">Download and Print 40 question answer sheet</a></p>
+
 		<p>You are not logged in :(</p>
-		<a href="{% url 'login' %}">goto login</a>
+        <p><a href="/admin"target="_blank">Admin Panel Login</a></p>
+		<a href="{% url 'login' %}">Account Login</a>
 		<br><br>
-		<a href="{% url 'signup' %}">new account</a>
+		<a href="{% url 'signup' %}">Account Registration</a>
 	</div>
 {% endif %}
 {% endblock %}
