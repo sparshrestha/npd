@@ -21,7 +21,7 @@ def template_upload_location(instance, filename):  # removing empty media folder
 
 
 class Post(models.Model):
-    title = models.TextField()
+    title = models.CharField(max_length=20)
     cover = models.ImageField(upload_to=sheet_upload_location)
     template = models.FileField(upload_to=template_upload_location, default=None)
     marker = models.ImageField(upload_to=template_upload_location, null=True, blank=True)
