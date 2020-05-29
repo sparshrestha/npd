@@ -1,4 +1,4 @@
-<h2>Upload images shown and to <a href="{% url 'add_post' %}">add new</a></h2>
+<h2>Uploaded Exams Scanned Answer Sheet | To <a href="{% url 'add_post' %}">Create New Exams</a></h2>
 	{% for post in object_list %}
 	<h3>{{ post.title }}</h3>
 	  <img src="{{ post.cover.url }}" alt="{{ post.title }}" style="max-height: 256px; max-width: 256px">
