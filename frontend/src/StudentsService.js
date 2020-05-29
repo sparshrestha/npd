@@ -3,8 +3,7 @@ const API_URL = 'http://localhost:8000';
 
 export default class StudentsService{
 
-    constructor(){}
-
+    // constructor(){}
 
     getStudents() {
         const url = `${API_URL}/api/students/`;
