@@ -19,7 +19,7 @@ from django.urls import path, include
 from django.conf.urls.static import static
 from django.views.generic.base import TemplateView
 
-from students import views
+# from students import views
 from django.conf.urls import url
 
 urlpatterns = [
@@ -28,10 +28,10 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
     path('posts/', include('posts.urls')),
-    path('students/', include('students.urls')),
+    # path('students/', include('students.urls')),
 
-    url(r'^api/students/$', views.students_list),
-    url(r'^api/students/(?P<pk>[0-9]+)$', views.students_detail)
+    # url(r'^api/students/$', views.students_list),
+    # url(r'^api/students/(?P<pk>[0-9]+)$', views.students_detail)
 ]
 
 if settings.DEBUG:

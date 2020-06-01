@@ -40,8 +40,6 @@ INSTALLED_APPS = [
     'accounts.apps.AccountsConfig',
     'posts.apps.PostsConfig',
     'django_cleanup',
-    'students',
-    'grades'
 ]
 
 MIDDLEWARE = [
