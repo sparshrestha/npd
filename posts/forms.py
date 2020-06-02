@@ -1,5 +1,5 @@
 from django import forms
-from .models import Post
+from .models import Post, Student
 
 
 class PostForm(forms.ModelForm):
@@ -11,3 +11,13 @@ class PostForm(forms.ModelForm):
             'template',
             'marker'
         ]
+
+
+class StudentForm(forms.ModelForm):
+    class Meta:
+        model = Student
+        fields = [
+            'student_id',
+            'student_name',
+            'student_email'
+         ]
