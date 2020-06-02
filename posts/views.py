@@ -4,12 +4,12 @@ from django.urls import reverse_lazy, reverse
 
 from GFoody.settings import BASE_DIR
 from OMRchecker import OMRChecker
-from .forms import PostForm
-from .models import Post
+from .forms import ExamsForm
+from .models import Exams
 
 
 class HomePageView(ListView):
-	model = Post
+	model = Exams
 	template_name = 'posts.html'
 
 
@@ -20,7 +20,7 @@ def process_image(request):
 
 
 class CreatePostView(CreateView):
-	model = Post
-	form_class = PostForm
+	model = Exams
+	form_class = ExamsForm
 	template_name = 'post.html'
 	success_url = reverse_lazy('home')
