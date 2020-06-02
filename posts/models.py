@@ -20,7 +20,9 @@ def template_upload_location(instance, filename):  # removing empty media folder
     return file_path
 
 
-class Post(models.Model):
+class Exams(models.Model):
+    class Meta: verbose_name_plural = 'Exams Record'
+
     title = models.CharField(max_length=20)
     cover = models.ImageField(upload_to=sheet_upload_location)
     template = models.FileField(upload_to=template_upload_location, default=None)
@@ -31,9 +33,22 @@ class Post(models.Model):
 
 
 class Student(models.Model):
+    class Meta: verbose_name_plural = 'Students Record'
+
     student_id = models.CharField(max_length=8, default='')
     student_name = models.CharField(max_length=50)
     student_email = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.student_id
+
+
+class ProcessedMarks(models.Model):
+    class Meta: verbose_name_plural = 'Processed Marks'
+
+    exam_title = models.CharField(max_length=20)
+    student_id = models.CharField(max_length=8, default='')
+    raw_marks = models.CharField(max_length=300)
 
     def __str__(self):
         return self.student_id
