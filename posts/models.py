@@ -28,3 +28,12 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Student(models.Model):
+    student_id = models.CharField(max_length=8, default='')
+    student_name = models.CharField(max_length=50)
+    student_email = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.student_id
