@@ -8,12 +8,12 @@ urlpatterns = [
 		name='home'
 	),
 	path(
-		'post/',
+		'exams/',
 		CreatePostView.as_view(),
 		name='add_post'
 	),
 	path(
-		'post/process-images/',
+		'exams/process-images/',
 		process_image,
 		name='process_images'
 	)
