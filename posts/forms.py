@@ -1,10 +1,10 @@
 from django import forms
-from .models import Post, Student
+from .models import Exams, Student, ProcessedMarks
 
 
-class PostForm(forms.ModelForm):
+class ExamsForm(forms.ModelForm):
     class Meta:
-        model = Post
+        model = Exams
         fields = [
             'title',
             'cover',
@@ -20,4 +20,16 @@ class StudentForm(forms.ModelForm):
             'student_id',
             'student_name',
             'student_email'
-         ]
+        ]
+
+
+class ProcessedMarks(forms.ModelForm):
+    class Meta:
+        model = ProcessedMarks
+        fields = [
+            'student_id',
+            'raw_marks',
+            'exam_title'
+
+
+        ]
