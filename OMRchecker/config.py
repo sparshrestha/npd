@@ -67,7 +67,7 @@ uniform_width = int(1000 / 1.5)
 uniform_width_hd = int(uniform_width * 1.5)
 uniform_height_hd = int(uniform_height * 1.5)
 
-TEXT_SIZE = 0.95
+TEXT_SIZE = 1.95
 CLR_BLACK = (50, 150, 150)
 CLR_WHITE = (250, 250, 250)
 CLR_GRAY = (130, 130, 130)
@@ -81,7 +81,7 @@ MIN_PAGE_AREA = 80000
 class Paths:
     def __init__(self, output):
         self.output = output
-        self.saveMarkedDir = f'{output}/CheckedOMRs/'
+        self.saveMarkedDir = f'media/{output}/CheckedOMRs/'
         self.resultDir = f'{output}/Results/'
         self.manualDir = f'{output}/Manual/'
         self.errorsDir = f'{self.manualDir}ErrorFiles/'
