@@ -92,8 +92,8 @@ def student_id_to_name(student_id):
     c = conn.cursor()
     sql = '''SELECT * FROM posts_student WHERE student_id >= ?'''
     for posts_student in c.execute(sql, (student_id,)):
-        print(posts_student[1])
-        studentname = posts_student[1]
+        print(posts_student[2])
+        studentname = posts_student[2]
         break
 
     conn.close()
