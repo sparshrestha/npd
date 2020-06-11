@@ -4,7 +4,10 @@ pip install django pillow
 
 pip install opencv-python opencv-contrib-python
 
-pip install -r OMRchecker/requirements.txt
+pip install -r requirements.txt
+
+python manage.py makemigrations
+python manage.py migrate
 
 ##### for linux
 
@@ -16,8 +19,10 @@ sudo apt-get install -y libavcodec-dev libavformat-dev libswscale-dev libv4l-dev
 
 sudo apt-get install -y libatlas-base-dev gfortran
 
+
+
 running project
- 
+
 python manage.py runserver
 
 ![architecture](arch.jpg)
