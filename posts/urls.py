@@ -1,4 +1,5 @@
 from django.urls import path
+from posts import views
 from .views import HomePageView, CreatePostView, process_image
 
 urlpatterns = [
@@ -13,8 +14,6 @@ urlpatterns = [
 		name='add_post'
 	),
 	path(
-		'exams/process-images/',
-		process_image,
-		name='process_images'
+		'exams/process-images/<str:exam_name>/', views.process_image, name='process_images'
 	)
 ]
