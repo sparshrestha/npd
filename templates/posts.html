@@ -2,9 +2,10 @@
 	{% for post in object_list %}
 	<h3>{{ post.title }}</h3>
 	  <img src="{{ post.cover.url }}" alt="{{ post.title }}" style="max-height: 256px; max-width: 256px">
+<a href="{% url 'process_images' exam_name=post.title %}">
+    <input class="favorite styled" type="button" value=Process{{ post.title }}>
+</a>
 
 	{% endfor %}
     <hr><br>
-<a href="{% url 'process_images' %}">
-    <input class="favorite styled" type="button" value="Process Images">
-</a>
+
