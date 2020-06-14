@@ -14,13 +14,13 @@ CHOICES = (
 
 
 def sheet_upload_location(instance, filename):
-    file_path = 'images/{exam_name}/sheets/{filename}'.format(exam_name=str(instance.title), filename=filename
+    file_path = 'images/{exam_name}/{exam_name}/sheets/{filename}'.format(exam_name=str(instance.title), filename=filename
                                                               )
     return file_path
 
 
 def template_upload_location(instance, filename):  # removing empty media folders and get upload location
-    file_path = 'images/{exam_name}/{filename}'.format(exam_name=str(instance.title), filename=filename
+    file_path = 'images/{exam_name}/{exam_name}/{filename}'.format(exam_name=str(instance.title), filename=filename
                                                        )
     media_root = getattr(settings, 'MEDIA_ROOT', None)
     for relative_root, dirs, files in os.walk(media_root, topdown=False):
@@ -34,10 +34,10 @@ class Exams(models.Model):
     class Meta: verbose_name_plural = 'Exams Record'
 
     title = models.CharField(max_length=20)
-    cover = models.ImageField(upload_to=sheet_upload_location)
+    cover = models.ImageField(upload_to=sheet_upload_location, verbose_name="Answer Sheet")
     template = models.FileField(upload_to=template_upload_location, default=None)
     marker = models.ImageField(upload_to=template_upload_location, blank=True)
-    q1 = models.CharField(choices=CHOICES, max_length=10, null=True, blank=True)
+    q1 = models.CharField(choices=CHOICES, max_length=10, null=True, blank=True, verbose_name="Answer key:Q1")
     q2 = models.CharField(choices=CHOICES, max_length=10, null=True, blank=True)
     q3 = models.CharField(choices=CHOICES, max_length=10, null=True, blank=True)
     q4 = models.CharField(choices=CHOICES, max_length=10, null=True, blank=True)
@@ -143,9 +143,9 @@ class ProcessedMarks(models.Model):
     q40 = models.CharField(max_length=4, null=True)
 
     def admin_photo(self):
-        return mark_safe('<img src="{}" width= 40% />'.format(self.processed_image.url))
+        return mark_safe('<img src="{}" width= 400 px />'.format(self.processed_image.url))
 
-    admin_photo.short_description = 'Image'
+    admin_photo.short_description = 'Processed Image'
     admin_photo.allow_tags = True
 
     def __str__(self):
