@@ -19,6 +19,12 @@ def process_image(request, exam_name):
     return HttpResponseRedirect(reverse('home'))
 
 
+def process_all_exam(request):
+    print('----------called-------')
+    OMRChecker(input_dir=[BASE_DIR + '/media/images/']).execute()
+    return HttpResponseRedirect(reverse('home'))
+
+
 class CreatePostView(CreateView):
     model = Exams
     form_class = ExamsForm

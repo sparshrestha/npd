@@ -90,6 +90,7 @@ def process_dir(root_dir, subdir, template):
 def student_id_to_name(student_id):
     conn = sqlite3.connect("db.sqlite3")
     c = conn.cursor()
+    studentname = 'none'
     sql = '''SELECT * FROM posts_student WHERE student_id >= ?'''
     for posts_student in c.execute(sql, (student_id,)):
         print(posts_student[2])
@@ -107,7 +108,15 @@ def insert_to_db(exam_title, response, file_name):
     end = '\sheets/CheckedOMRs/'
     s = exam_title
     title = (s.split(start))[1].split(end)[0]
-    file_name = 'outputs/'+title+'/sheets/CheckedOMRs/'+file_name
+    savepath = title
+    if title.find('\\') != -1:
+        start2 = '\\'
+        end2 = '\\'
+        exam_name = (title.split(start2))[1].split(end2)[0]
+        savepath = title
+        title = exam_name
+
+    file_name = 'outputs/' + savepath + '/sheets/CheckedOMRs/' + file_name
     df = pd.DataFrame(response, index=[1])
     roll_no = df.iat[0, 0]
     # calculating marks
@@ -118,13 +127,18 @@ def insert_to_db(exam_title, response, file_name):
     df2 = df2.drop(columns=['id', 'title', 'cover', 'template', 'marker'], axis=1)
     print(df1)
     print(df2)
-    df_merge = pd.merge(df1, df2, how='outer')
-    print(df_merge)
-    arr = df_merge.to_numpy()
+    df = pd.concat([df1, df2])
+    print(df)
     cou = 0
-    for i in range(0, 39):
-        x = (arr[0][i]) == (arr[1][i])
-        cou = cou + x
+    if df1.size == df2.size:
+        df_merge = pd.merge(df1, df2, how='outer')
+        print(df_merge)
+        arr = df_merge.to_numpy()
+        cou = 0
+
+        for i in range(0, 39):
+            x = (arr[0][i]) == (arr[1][i])
+            cou = cou + x
 
     print(cou)
     final_mark = cou
@@ -133,7 +147,10 @@ def insert_to_db(exam_title, response, file_name):
     df.insert(4, "processed_image", file_name, True)
     student_name = student_id_to_name(roll_no)
     df.insert(3, "student_name", student_name, True)
-    df.rename(columns={'Roll': 'student_id'}, inplace=True)
+    df.insert(1, "student_id", roll_no, True)
+
+    # df.rename(columns={'Roll': 'student_id'}, inplace=True)
+
     df.to_sql('posts_processedmarks', disk_engine, if_exists='append', index=False)
 
 
