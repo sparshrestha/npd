@@ -125,10 +125,7 @@ def insert_to_db(exam_title, response, file_name):
     df2 = pd.read_sql_table('posts_exams', disk_engine)
     df2 = df2.loc[df2['title'] == title]
     df2 = df2.drop(columns=['id', 'title', 'cover', 'template', 'marker'], axis=1)
-    print(df1)
-    print(df2)
-    df = pd.concat([df1, df2])
-    print(df)
+   
     cou = 0
     if df1.size == df2.size:
         df_merge = pd.merge(df1, df2, how='outer')
@@ -147,10 +144,8 @@ def insert_to_db(exam_title, response, file_name):
     df.insert(4, "processed_image", file_name, True)
     student_name = student_id_to_name(roll_no)
     df.insert(3, "student_name", student_name, True)
+    df.rename(columns={'Roll': 'student_id'}, inplace=True)
     df.insert(1, "student_id", roll_no, True)
-
-    # df.rename(columns={'Roll': 'student_id'}, inplace=True)
-
     df.to_sql('posts_processedmarks', disk_engine, if_exists='append', index=False)
 
 
