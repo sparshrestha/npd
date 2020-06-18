@@ -104,23 +104,16 @@ def student_id_to_name(student_id):
 
 def insert_to_db(exam_title, response, file_name):
     disk_engine = create_engine('sqlite:///db.sqlite3')
-    # for server #
-    # start = 'outputs/'
-    # end = '/sheets/CheckedOMRs/'
-    start = 'outputs\\'
-    end = '\sheets/CheckedOMRs/'
     s = exam_title
+    s = s.replace('\\', '/')
+    start = 'outputs/'
+    end = '/sheets/CheckedOMRs/'
     title = (s.split(start))[1].split(end)[0]
     savepath = title
 
-    # for server
-    # if title.find('//') != -1:
-    #     start2 = '//'
-    #     end2 = '//'
-
-    if title.find('//') != -1:
-        start2 = '//'
-        end2 = '//'
+    if title.find('/') != -1:
+        start2 = '/'
+        end2 = '/'
         exam_name = (title.split(start2))[1].split(end2)[0]
         savepath = title
         title = exam_name
