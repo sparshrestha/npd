@@ -104,8 +104,8 @@ def student_id_to_name(student_id):
 
 def insert_to_db(exam_title, response, file_name):
     disk_engine = create_engine('sqlite:///db.sqlite3')
-    start = 'outputs\\'
-    end = '\sheets/CheckedOMRs/'
+    start = 'media/outputs\\'
+    end = '\\sheets/CheckedOMRs/'
     s = exam_title
     title = (s.split(start))[1].split(end)[0]
     savepath = title
@@ -125,7 +125,7 @@ def insert_to_db(exam_title, response, file_name):
     df2 = pd.read_sql_table('posts_exams', disk_engine)
     df2 = df2.loc[df2['title'] == title]
     df2 = df2.drop(columns=['id', 'title', 'cover', 'template', 'marker'], axis=1)
-   
+
     cou = 0
     if df1.size == df2.size:
         df_merge = pd.merge(df1, df2, how='outer')
