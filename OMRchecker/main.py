@@ -104,8 +104,8 @@ def student_id_to_name(student_id):
 
 def insert_to_db(exam_title, response, file_name):
     disk_engine = create_engine('sqlite:///db.sqlite3')
-    start = 'media/outputs/'
-    end = '/sheets/CheckedOMRs/'
+    start = 'outputs//'
+    end = '//sheets/CheckedOMRs/'
     s = exam_title
     title = (s.split(start))[1].split(end)[0]
     savepath = title
