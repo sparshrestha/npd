@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Processed 40 exams</title>
+</head>
+<body>
+<h2>Send Feedback Email to Student</h2>
+<h2><a href="{% url 'home' %}">Go to Home</a></h2>
+	{% for post in object_list %}
+	<h3>{{ post.exam_title }} {{ post.student_name}} {{ post.student_id}}</h3>
+	  <img src="{{ post.processed_image.url }}" alt="{{ post.student_name}}" style="max-height: 256px; max-width: 256px">
+<a href="{% url 'feedback_exams' processed_id=post.id %}">
+    <input class="favorite styled" type="button" value=Feedback {{ post.id }}>
+</a>
+    {% endfor %}
+  <hr><br>
+<a href="{% url 'feedback_exams_all'%}">
+    <input class="favorite styled" type="button" value="Feedback All ">
+</a>
+
+</body>
+</html>

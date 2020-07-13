@@ -1,0 +1,14 @@
+<h2>Uploaded 100 Exams Scanned Answer Sheet | To <a href="{% url 'add_exam100' %}">Create New Exams</a></h2>
+<h2><a href="{% url 'home' %}">Go to Home</a></h2>
+	{% for post in object_list %}
+	<h3>{{ post.title }}</h3>
+	  <img src="{{ post.cover.url }}" alt="{{ post.title }}" style="max-height: 256px; max-width: 256px">
+<a href="{% url 'process_images100' exam_name=post.title %}">
+    <input class="favorite styled" type="button" value=Process{{ post.title }}>
+</a>
+
+	{% endfor %}
+    <hr><br>
+<a href="{% url 'process_all_exams100'%}">
+    <input class="favorite styled" type="button" value="Process All Exams">
+</a>

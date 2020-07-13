@@ -1,0 +1,5 @@
+<h2>List of All Students | To <a href="{% url 'home40' %}">Process 40 Exams</a>
+<a href="{% url 'home100' %}">Process 100 Exams</a></h2>
+		{% for post in object_list %}
+        <h3>{{ post.student_name }}</h3>
+        {% endfor %}

@@ -88,16 +88,10 @@ def process_dir(root_dir, subdir, template):
 
 
 def student_id_to_name(student_id):
-    conn = sqlite3.connect("db.sqlite3")
-    c = conn.cursor()
-    studentname = 'none'
-    sql = '''SELECT * FROM posts_student WHERE student_id >= ?'''
-    for posts_student in c.execute(sql, (student_id,)):
-        print(posts_student[2])
-        studentname = posts_student[2]
-        break
-
-    conn.close()
+    disk_engine = create_engine('sqlite:///db.sqlite3')
+    df2 = pd.read_sql_table('posts_student', disk_engine)
+    df2 = df2.loc[df2['student_id'] == student_id]
+    studentname = df2.iat[0, 2]
 
     return studentname
 
@@ -121,24 +115,56 @@ def insert_to_db(exam_title, response, file_name):
     file_name = 'outputs/' + savepath + '/sheets/CheckedOMRs/' + file_name
     df = pd.DataFrame(response, index=[1])
     roll_no = df.iat[0, 0]
+
     # calculating marks
     df1 = df
     df1 = df1.drop(columns=['Roll'], axis=1)
-    df2 = pd.read_sql_table('posts_exams', disk_engine)
-    df2 = df2.loc[df2['title'] == title]
-    df2 = df2.drop(columns=['id', 'title', 'cover', 'template', 'marker'], axis=1)
+    print(df1.size)
 
-    cou = 0
-    if df1.size == df2.size:
-        df_merge = pd.merge(df1, df2, how='outer')
-        print(df_merge)
-        arr = df_merge.to_numpy()
+    if df1.size == 40:
+        df2 = pd.read_sql_table('posts_exams', disk_engine)
+        df2 = df2.loc[df2['title'] == title]
+        df2 = df2.drop(columns=['id', 'title', 'cover', 'template', 'marker'], axis=1)
+
         cou = 0
+        if df1.size == df2.size:
+            df_merge = df1
+            df_merge = df_merge.append(df2)
+            # df_merge = pd.merge(df1, df2, how='outer')
+            print(df_merge)
+            arr = df_merge.to_numpy()
+            cou = 0
 
-        for i in range(0, 39):
-            x = (arr[0][i]) == (arr[1][i])
-            cou = cou + x
+            for i in range(0, 40):
+                x = (arr[0][i]) == (arr[1][i])
+                cou = cou + x
 
+    elif df1.size == 100:
+        print(df1)
+        print("inside 100")
+        df2 = pd.read_sql_table('posts_exams100', disk_engine)
+        df2 = df2.loc[df2['title'] == title]
+        df2 = df2.drop(columns=['id', 'title', 'cover', 'template', 'marker'], axis=1)
+        print(df2)
+        cou = 0
+        if df1.size == df2.size:
+            df_merge = df1
+            print("df merge df1 is ")
+            print(df_merge)
+            print("df merge df2 is ")
+            print(df2)
+            df_merge = df_merge.append(df2)
+
+            # pd.merge(df1, df2, how='left')
+            print("df merge is ")
+
+            print(df_merge)
+            arr = df_merge.to_numpy()
+            cou = 0
+
+            for i in range(0, 100):
+                x = (arr[0][i]) == (arr[1][i])
+                cou = cou + x
     print(cou)
     final_mark = cou
     df.insert(0, "exam_title", [title], True)
@@ -148,7 +174,10 @@ def insert_to_db(exam_title, response, file_name):
     df.insert(3, "student_name", student_name, True)
     df.rename(columns={'Roll': 'student_id'}, inplace=True)
     df.insert(1, "student_id", roll_no, True)
-    df.to_sql('posts_processedmarks', disk_engine, if_exists='append', index=False)
+    if df1.size == 40:
+        df.to_sql('posts_processedmarks', disk_engine, if_exists='append', index=False)
+    elif df1.size == 100:
+        df.to_sql('posts_processedmarks100', disk_engine, if_exists='append', index=False)
 
 
 def checkAndMove(error_code, filepath, filepath2):
