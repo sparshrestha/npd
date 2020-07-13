@@ -3,7 +3,7 @@ from django.views.generic import ListView, CreateView
 from django.urls import reverse_lazy, reverse
 
 from GFoody.settings import BASE_DIR
-from OMRchecker import OMRChecker
+from OMRchecker import OMRChecker, student_id_to_email
 from .forms import Exams100Form, ExamsForm
 from .models import Exams100, Exams, Student, ProcessedMarks
 from django.http import HttpResponse
@@ -66,13 +66,13 @@ def feedback_exams(request, processed_id):
     subject = sid + " " + sname + " " + exam_name
     body = "Final marks for" + sid + " " + sname + " " + exam_name + " is " + f_marks + " " + "check attached answer " \
                                                                                         "sheet for confirmation "
-
+    semail = student_id_to_email(sid)
     email = EmailMessage(
         subject,
         body,
         'admin@npd.com.np',
-        ['narayan.adhikari60@gmail.com'],
-        ['narayan.adhikari60@gmail.com'],
+        [semail],
+        #['narayan.adhikari60@gmail.com'],
         headers={'Message-ID': 'foo'},
     )
     email.attach_file(attach_file)

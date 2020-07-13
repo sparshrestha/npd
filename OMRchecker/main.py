@@ -96,6 +96,15 @@ def student_id_to_name(student_id):
     return studentname
 
 
+def student_id_to_email(student_id):
+    disk_engine = create_engine('sqlite:///db.sqlite3')
+    df2 = pd.read_sql_table('posts_student', disk_engine)
+    df2 = df2.loc[df2['student_id'] == student_id]
+    studentemail = df2.iat[0, 3]
+
+    return studentemail
+
+
 def insert_to_db(exam_title, response, file_name):
     disk_engine = create_engine('sqlite:///db.sqlite3')
     s = exam_title
@@ -166,6 +175,7 @@ def insert_to_db(exam_title, response, file_name):
                 x = (arr[0][i]) == (arr[1][i])
                 cou = cou + x
     print(cou)
+   # print(student_id_to_email(roll_no))
     final_mark = cou
     df.insert(0, "exam_title", [title], True)
     df.insert(2, "final_marks", final_mark, True)
