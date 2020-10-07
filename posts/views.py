@@ -118,3 +118,8 @@ class CreateExamView100(CreateView):
     form_class = Exams100Form
     template_name = 'exam100.html'
     success_url = reverse_lazy('home100')
+
+
+def retotal_processed40(request):
+    print(request)
+    print('afasssssssssssssssssssssssss')

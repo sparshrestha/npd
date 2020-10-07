@@ -53,5 +53,12 @@ urlpatterns = [
     path(
         'exam/feedback_all/', views.feedback_exams_all, name='feedback_exams_all'
     ),
-    path('feedback_exams', feedback_exams, name='feedback_exams')
+    path('feedback_exams', feedback_exams, name='feedback_exams'),
+
+    # retotal
+    path(
+        'processed40/retotal',
+        views.retotal_processed40,
+        name='posts_processedmarks_retotal'
+    )
 ]
