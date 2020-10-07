@@ -40,7 +40,8 @@ def template_upload_location(instance, filename):  # removing empty media folder
 
 
 class Exams(models.Model):
-    class Meta: verbose_name_plural = 'Exams Record 40 Questions'
+    class Meta:
+        verbose_name_plural = 'Exams Record 40 Questions'
 
     title = models.CharField(max_length=20)
     cover = models.ImageField(upload_to=sheet_upload_location, verbose_name="Answer Sheet")
@@ -105,7 +106,8 @@ class Exams(models.Model):
 
 
 class Student(models.Model):
-    class Meta: verbose_name_plural = 'Students Record'
+    class Meta:
+        verbose_name_plural = 'Students Record'
 
     student_id = models.CharField(max_length=15, default='')
     student_name = models.CharField(max_length=50)
@@ -116,7 +118,8 @@ class Student(models.Model):
 
 
 class ProcessedMarks(models.Model):
-    class Meta: verbose_name_plural = 'Processed Marks'
+    class Meta:
+        verbose_name_plural = 'Processed Marks'
 
     exam_title = models.CharField(max_length=20)
     student_id = models.CharField(max_length=15, default='')

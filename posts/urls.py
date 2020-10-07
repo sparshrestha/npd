@@ -57,7 +57,7 @@ urlpatterns = [
 
     # retotal
     path(
-        'processed40/retotal',
+        'processed40/<int:id>/retotal',
         views.retotal_processed40,
         name='posts_processedmarks_retotal'
     )
