@@ -11,29 +11,25 @@ from .models import (
     Exams100,
     ProcessedMarks100
 )
+from .utils import get_marks_from_dict
 
 
 class MarksForm:
-    def _get_marks(self, instance):
+    def get_marks(self, instance):
         all_fields = model_to_dict(instance)
-        marks_field = {}
-        for key in all_fields.keys():
-            if len(key) <= 3 and key[0] == 'q':
-                marks_field[key] = all_fields[key]
+        return get_marks_from_dict(data=all_fields)
 
-        return marks_field
-
-    def _count_final_marks(self, processed_marks, exam_marks):
+    def count_final_marks(self, processed_marks, exam_marks):
         marks = 0
         for key in exam_marks.keys():
             if exam_marks[key] == processed_marks[key]:
                 marks += 1
         return marks
 
-    def _retotal(self, instance, exam):
-        processed_marks = self._get_marks(instance=instance)
-        exam_marks = self._get_marks(instance=exam)
-        final_marks = self._count_final_marks(
+    def retotal(self, instance, exam):
+        processed_marks = self.get_marks(instance=instance)
+        exam_marks = self.get_marks(instance=exam)
+        final_marks = self.count_final_marks(
             processed_marks=processed_marks,
             exam_marks=exam_marks,
         )
@@ -58,7 +54,7 @@ class ProcessedMarksForm(forms.ModelForm, MarksForm):
             exam = Exams.objects.get(title=instance.exam_title)
         except Exams.DoesNotExist:
             raise ValidationError(_('Exam Not Found.'))
-        self._retotal(instance=instance, exam=exam)
+        self.retotal(instance=instance, exam=exam)
         return instance
 
 
@@ -113,7 +109,7 @@ class ProcessedMarks100Form(forms.ModelForm, MarksForm):
             exam = Exams100.objects.get(title=instance.exam_title)
         except Exams100.DoesNotExist:
             raise ValidationError(_('Exam Not Found.'))
-        self._retotal(instance=instance, exam=exam)
+        self.retotal(instance=instance, exam=exam)
 
         return instance
 

@@ -43,7 +43,7 @@ class Exams(models.Model):
     class Meta:
         verbose_name_plural = 'Exams Record 40 Questions'
 
-    title = models.CharField(max_length=20)
+    title = models.CharField(max_length=20, unique=True)
     cover = models.ImageField(upload_to=sheet_upload_location, verbose_name="Answer Sheet")
     template = models.FileField(upload_to=template_upload_location, blank=True, default="template.json")
     marker = models.ImageField(upload_to=template_upload_location, blank=True, default="omr_marker.jpg")
@@ -121,9 +121,9 @@ class ProcessedMarks(models.Model):
     class Meta:
         verbose_name_plural = 'Processed Marks'
 
-    exam_title = models.CharField(max_length=20)
-    student_id = models.CharField(max_length=15, default='')
-    student_name = models.CharField(max_length=50, default='')
+    exam_title = models.CharField(max_length=20, unique=True)
+    student_id = models.CharField(max_length=15, blank=True)
+    student_name = models.CharField(max_length=50, blank=True)
     processed_image = models.ImageField()
     final_marks = models.CharField(max_length=20, null=True, blank=True)
     q1 = models.CharField(max_length=4, null=True)
@@ -199,7 +199,8 @@ def template_upload_location100(instance, filename):  # removing empty media fol
 class Exams100(models.Model):
     class Meta:
         verbose_name_plural = 'Exams Record 100 Questions'
-    title = models.CharField(max_length=20)
+
+    title = models.CharField(max_length=20, unique=True)
     cover = models.ImageField(upload_to=sheet_upload_location100, verbose_name="Answer Sheet")
     template = models.FileField(upload_to=template_upload_location100, blank=True, default="template.json")
     marker = models.ImageField(upload_to=template_upload_location100, blank=True, default="omr_marker.jpg")

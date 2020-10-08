@@ -17,9 +17,15 @@ import imutils
 import sqlite3
 
 # Local globals
+from django.forms import model_to_dict
+
 from OMRchecker import config, utils
 from OMRchecker.template import Template
 from sqlalchemy import create_engine
+
+from posts.admin import MarksForm
+from posts.models import ProcessedMarks, ProcessedMarks100
+from posts.utils import get_marks_from_dict, get_student, save_processed_marks, get_exam, get_exam100
 
 filesMoved = 0
 filesNotMoved = 0
@@ -29,6 +35,7 @@ from csv import QUOTE_NONNUMERIC
 from time import localtime, strftime, time
 
 
+mark_class = MarksForm()
 # TODO(beginner task) :-
 # from colorama import init
 # init()
@@ -106,7 +113,7 @@ def student_id_to_email(student_id):
 
 
 def insert_to_db(exam_title, response, file_name):
-    disk_engine = create_engine('sqlite:///db.sqlite3')
+    # disk_engine = create_engine('sqlite:///db.sqlite3')
     s = exam_title
     s = s.replace('\\', '/')
     start = 'outputs/'
@@ -122,72 +129,46 @@ def insert_to_db(exam_title, response, file_name):
         title = exam_name
 
     file_name = 'outputs/' + savepath + '/sheets/CheckedOMRs/' + file_name
-    df = pd.DataFrame(response, index=[1])
-    roll_no = df.iat[0, 0]
 
-    # calculating marks
-    df1 = df
-    df1 = df1.drop(columns=['Roll'], axis=1)
-    print(df1.size)
+    marks_dataset = get_marks_from_dict(data=response)
 
-    if df1.size == 40:
-        df2 = pd.read_sql_table('posts_exams', disk_engine)
-        df2 = df2.loc[df2['title'] == title]
-        df2 = df2.drop(columns=['id', 'title', 'cover', 'template', 'marker'], axis=1)
 
-        cou = 0
-        if df1.size == df2.size:
-            df_merge = df1
-            df_merge = df_merge.append(df2)
-            # df_merge = pd.merge(df1, df2, how='outer')
-            print(df_merge)
-            arr = df_merge.to_numpy()
-            cou = 0
+    student = get_student(student_id=response.get('Roll'))
 
-            for i in range(0, 40):
-                x = (arr[0][i]) == (arr[1][i])
-                cou = cou + x
+    if len(marks_dataset) == 40:
+        processed_marks, created = ProcessedMarks.objects.get_or_create(exam_title=title)
+        save_processed_marks(instance=processed_marks, processed_marks=marks_dataset)
+        processed_marks.student_id = student.student_id
+        processed_marks.student_name = student.student_name
+        processed_marks.processed_image = file_name
 
-    elif df1.size == 100:
-        print(df1)
-        print("inside 100")
-        df2 = pd.read_sql_table('posts_exams100', disk_engine)
-        df2 = df2.loc[df2['title'] == title]
-        df2 = df2.drop(columns=['id', 'title', 'cover', 'template', 'marker'], axis=1)
-        print(df2)
-        cou = 0
-        if df1.size == df2.size:
-            df_merge = df1
-            print("df merge df1 is ")
-            print(df_merge)
-            print("df merge df2 is ")
-            print(df2)
-            df_merge = df_merge.append(df2)
+        # final marks
+        exam_marks = get_marks_from_dict(
+            data=model_to_dict(get_exam(exam_title=title))
+        )
+        processed_marks.final_marks = mark_class.count_final_marks(
+            processed_marks=marks_dataset,
+            exam_marks=exam_marks
+        )
 
-            # pd.merge(df1, df2, how='left')
-            print("df merge is ")
+        processed_marks.save()
 
-            print(df_merge)
-            arr = df_merge.to_numpy()
-            cou = 0
+    elif len(marks_dataset) == 100:
+        processed_marks, created = ProcessedMarks100.objects.get_or_create(exam_title=title)
+        save_processed_marks(instance=processed_marks, processed_marks=marks_dataset)
+        processed_marks.student_id = student.student_id
+        processed_marks.student_name = student.student_name
+        processed_marks.processed_image = file_name
 
-            for i in range(0, 100):
-                x = (arr[0][i]) == (arr[1][i])
-                cou = cou + x
-    print(cou)
-   # print(student_id_to_email(roll_no))
-    final_mark = cou
-    df.insert(0, "exam_title", [title], True)
-    df.insert(2, "final_marks", final_mark, True)
-    df.insert(4, "processed_image", file_name, True)
-    student_name = student_id_to_name(roll_no)
-    df.insert(3, "student_name", student_name, True)
-    df.rename(columns={'Roll': 'student_id'}, inplace=True)
-    df.insert(1, "student_id", roll_no, True)
-    if df1.size == 40:
-        df.to_sql('posts_processedmarks', disk_engine, if_exists='append', index=False)
-    elif df1.size == 100:
-        df.to_sql('posts_processedmarks100', disk_engine, if_exists='append', index=False)
+        # final marks
+        exam_marks = get_marks_from_dict(
+            data=model_to_dict(get_exam100(exam_title=title))
+        )
+        processed_marks.final_marks = mark_class.count_final_marks(
+            processed_marks=marks_dataset,
+            exam_marks=exam_marks
+        )
+        processed_marks.save()
 
 
 def checkAndMove(error_code, filepath, filepath2):
