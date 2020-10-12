@@ -28,7 +28,7 @@ class ProcessAllExamsUseCase:
             input_dir = '{}/input'.format(
                base_dir
             )
-            output_dir = '{}/output_dir'.format(
+            output_dir = '{}/output'.format(
                 base_dir
             )
             OMRChecker(
