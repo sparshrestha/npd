@@ -433,15 +433,15 @@ def process_files(omr_files, template, args, out, exam_title):
             # Enter into Results sheet-
             results_line = [filename, filepath, newfilepath, score] + respArray
             # Write/Append to results_line file(opened in append mode)
-            pd.DataFrame(
-                results_line,
-                dtype=str).T.to_csv(
-                out.filesObj["Results"],
-                quoting=QUOTE_NONNUMERIC,
-                header=False,
-                index=False)
-            print("[%d] Graded with score: %.2f" %
-                  (filesCounter, score), '\t file_id: ', file_id)
+            # pd.DataFrame(
+            #     results_line,
+            #     dtype=str).T.to_csv(
+            #     out.filesObj["Results"],
+            #     quoting=QUOTE_NONNUMERIC,
+            #     header=False,
+            #     index=False)
+            # print("[%d] Graded with score: %.2f" %
+            #       (filesCounter, score), '\t file_id: ', file_id)
             # print(filesCounter,file_id,resp['Roll'],'score : ',score)
 
     timeChecking = round(time() - start_time, 2) if filesCounter else 1
