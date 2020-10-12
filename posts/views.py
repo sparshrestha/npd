@@ -17,6 +17,9 @@ import re
 import os
 import cv2
 
+from .usecases import ProcessAllExamsUseCase
+
+
 class HomePage(ListView):
     model = Student
     template_name = 'process.html'
@@ -39,7 +42,10 @@ class HomePageProcessed(ListView):
 
 def process_image(request, exam_name):
     print('----------called-------')
-    OMRChecker(input_dir=[BASE_DIR + '/media/images/40/' + exam_name]).execute()
+    OMRChecker(
+        input_dir=[settings.MEDIA_ROOT + '/40/' + exam_name + '/input'],
+        output_dir=settings.MEDIA_ROOT + '/40/' + exam_name + '/output'
+    ).execute()
     return HttpResponseRedirect(reverse('home40'))
 
 
@@ -90,19 +96,25 @@ def feedback_exams_all(request):
 
 def process_all_exam(request):
     print('----------called-------')
-    OMRChecker(input_dir=[BASE_DIR + '/media/images/40/']).execute()
+    ProcessAllExamsUseCase(folder=settings.MEDIA_ROOT + '/40').execute()
+    # OMRChecker(input_dir=[settings.MEDIA_ROOT + '/40/']).execute()
     return HttpResponseRedirect(reverse('home40'))
 
 
 def process_image100(request, exam_name):
     print('----------called-------')
-    OMRChecker(input_dir=[BASE_DIR + '/media/images/100/' + exam_name]).execute()
+    OMRChecker(
+        input_dir=[settings.MEDIA_ROOT + '/100/' + exam_name + '/input'],
+        output_dir=settings.MEDIA_ROOT + '/100/' + exam_name + '/output'
+    ).execute()
+    # OMRChecker(input_dir=[BASE_DIR + '/media/images/100/' + exam_name]).execute()
     return HttpResponseRedirect(reverse('home100'))
 
 
 def process_all_exam100(request):
     print('----------called-------')
-    OMRChecker(input_dir=[BASE_DIR + '/media/images/100/']).execute()
+    ProcessAllExamsUseCase(folder=settings.MEDIA_ROOT + '/100').execute()
+    # OMRChecker(input_dir=[BASE_DIR + '/media/images/100/']).execute()
     return HttpResponseRedirect(reverse('home100'))
 
 

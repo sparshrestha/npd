@@ -81,10 +81,4 @@ MIN_PAGE_AREA = 80000
 class Paths:
     def __init__(self, output):
         self.output = output
-        self.saveMarkedDir = f'media/{output}/CheckedOMRs/'
-        self.resultDir = f'{output}/Results/'
-        self.manualDir = f'{output}/Manual/'
-        self.errorsDir = f'{self.manualDir}ErrorFiles/'
-        self.badRollsDir = f'{self.manualDir}BadRollNosFiles/'
-        self.multiMarkedDir = f'{self.manualDir}MultiMarkedFiles/'
-
+        self.saveMarkedDir = '{}/'.format(output)

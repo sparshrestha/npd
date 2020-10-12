@@ -1,15 +1,19 @@
 from django.db import models
-from django.conf import settings
-from multiselectfield import MultiSelectField
-from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.core.files import File
-from django.core.files.base import ContentFile
 import os
-import shutil
-from shutil import copyfile
-from pathlib import Path
 from distutils.dir_util import copy_tree
+
+from posts.upload_handlers import (
+    upload_exam_cover_to,
+    upload_exam_template_to,
+    upload_exam_marker_to,
+    upload_processed_marks_image_to,
+    upload_exam100_cover_to,
+    upload_exam100_template_to,
+    upload_exam100_marker_to,
+    upload_100processed_marks_image_to
+)
 
 CHOICES = (
     ('A', 'A'),
@@ -20,33 +24,25 @@ CHOICES = (
 )
 
 
-def sheet_upload_location(instance, filename):
-    file_path = 'images/40/{exam_name}/{exam_name}/sheets/{filename}'.format(exam_name=str(instance.title),
-                                                                             filename=filename
-                                                                             )
-    return file_path
-
-
-def template_upload_location(instance, filename):  # removing empty media folders and get upload location
-    file_path = 'images/40/{exam_name}/{exam_name}/{filename}'.format(exam_name=str(instance.title), filename=filename
-                                                                      )
-    media_root = getattr(settings, 'MEDIA_ROOT', None)
-    for relative_root, dirs, files in os.walk(media_root, topdown=False):
-        for dir_ in dirs:
-            if not os.listdir(os.path.join(relative_root, dir_)):
-                os.rmdir(os.path.join(relative_root, dir_))
-
-    return file_path
-
-
 class Exams(models.Model):
     class Meta:
         verbose_name_plural = 'Exams Record 40 Questions'
 
     title = models.CharField(max_length=20, unique=True)
-    cover = models.ImageField(upload_to=sheet_upload_location, verbose_name="Answer Sheet")
-    template = models.FileField(upload_to=template_upload_location, blank=True, default="template.json")
-    marker = models.ImageField(upload_to=template_upload_location, blank=True, default="omr_marker.jpg")
+    cover = models.ImageField(
+        upload_to=upload_exam_cover_to,
+        verbose_name="Answer Sheet"
+    )
+    template = models.FileField(
+        upload_to=upload_exam_template_to,
+        blank=True,
+        default="template.json"
+    )
+    marker = models.ImageField(
+        upload_to=upload_exam_marker_to,
+        blank=True,
+        default="omr_marker.jpg"
+    )
     q1 = models.CharField(choices=CHOICES, max_length=10, null=True, blank=True, verbose_name="Answer key:Q1")
     q2 = models.CharField(choices=CHOICES, max_length=10, null=True, blank=True)
     q3 = models.CharField(choices=CHOICES, max_length=10, null=True, blank=True)
@@ -124,7 +120,7 @@ class ProcessedMarks(models.Model):
     exam_title = models.CharField(max_length=20, unique=True)
     student_id = models.CharField(max_length=15, blank=True)
     student_name = models.CharField(max_length=50, blank=True)
-    processed_image = models.ImageField()
+    processed_image = models.ImageField(upload_to=upload_processed_marks_image_to)
     final_marks = models.CharField(max_length=20, null=True, blank=True)
     q1 = models.CharField(max_length=4, null=True)
     q2 = models.CharField(max_length=4, null=True)
@@ -177,33 +173,25 @@ class ProcessedMarks(models.Model):
         return '%s Student %s %s' % (self.exam_title, self.student_id, self.student_name)
 
 
-def sheet_upload_location100(instance, filename):
-    file_path = 'images/100/{exam_name}/{exam_name}/sheets/{filename}'.format(exam_name=str(instance.title),
-                                                                              filename=filename
-                                                                              )
-    return file_path
-
-
-def template_upload_location100(instance, filename):  # removing empty media folders and get upload location
-    file_path = 'images/100/{exam_name}/{exam_name}/{filename}'.format(exam_name=str(instance.title), filename=filename
-                                                                       )
-    media_root = getattr(settings, 'MEDIA_ROOT', None)
-    for relative_root, dirs, files in os.walk(media_root, topdown=False):
-        for dir_ in dirs:
-            if not os.listdir(os.path.join(relative_root, dir_)):
-                os.rmdir(os.path.join(relative_root, dir_))
-
-    return file_path
-
-
 class Exams100(models.Model):
     class Meta:
         verbose_name_plural = 'Exams Record 100 Questions'
 
     title = models.CharField(max_length=20, unique=True)
-    cover = models.ImageField(upload_to=sheet_upload_location100, verbose_name="Answer Sheet")
-    template = models.FileField(upload_to=template_upload_location100, blank=True, default="template.json")
-    marker = models.ImageField(upload_to=template_upload_location100, blank=True, default="omr_marker.jpg")
+    cover = models.ImageField(
+        upload_to=upload_exam100_cover_to,
+        verbose_name="Answer Sheet"
+    )
+    template = models.FileField(
+        upload_to=upload_exam100_template_to,
+        blank=True,
+        default="template.json"
+    )
+    marker = models.ImageField(
+        upload_to=upload_exam100_marker_to,
+        blank=True,
+        default="omr_marker.jpg"
+    )
     q1 = models.CharField(choices=CHOICES, max_length=10, null=True, blank=True, verbose_name="Answer key:Q1")
     q2 = models.CharField(choices=CHOICES, max_length=10, null=True, blank=True)
     q3 = models.CharField(choices=CHOICES, max_length=10, null=True, blank=True)
@@ -329,7 +317,9 @@ class ProcessedMarks100(models.Model):
     exam_title = models.CharField(max_length=20)
     student_id = models.CharField(max_length=15, default='')
     student_name = models.CharField(max_length=50, default='')
-    processed_image = models.ImageField()
+    processed_image = models.ImageField(
+        upload_to=upload_100processed_marks_image_to
+    )
     final_marks = models.CharField(max_length=20, null=True, blank=True)
     q1 = models.CharField(max_length=4, null=True)
     q2 = models.CharField(max_length=4, null=True)

@@ -1,10 +1,6 @@
-"""
-
-Designed and Developed by-
-Udayraj Deshmukh
-https://github.com/Udayraj123
-
-"""
+from glob import glob
+from csv import QUOTE_NONNUMERIC
+from time import localtime, strftime, time
 
 import re
 import os
@@ -13,10 +9,11 @@ import argparse
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import imutils
-import sqlite3
+
 
 # Local globals
+from django.conf import settings
+from django.core.files import File
 from django.forms import model_to_dict
 
 from OMRchecker import config, utils
@@ -30,21 +27,30 @@ from posts.utils import get_marks_from_dict, get_student, save_processed_marks, 
 filesMoved = 0
 filesNotMoved = 0
 
-from glob import glob
-from csv import QUOTE_NONNUMERIC
-from time import localtime, strftime, time
-
-
 mark_class = MarksForm()
+
+
 # TODO(beginner task) :-
 # from colorama import init
 # init()
 # from colorama import Fore, Back, Style
 
+def student_id_to_email(student_id):
+    disk_engine = create_engine('sqlite:///db.sqlite3')
+    df2 = pd.read_sql_table('posts_student', disk_engine)
+    df2 = df2.loc[df2['student_id'] == student_id]
+    studentemail = df2.iat[0, 3]
+
+    return studentemail
+
+
 def process_dir(root_dir, subdir, template):
+    print(root_dir)
+    print('-'*10, 'root_dir')
+    exam_title = root_dir.rsplit('/', 2)[1]
+    print(exam_title)
+    print('-'*10, 'root_dir')
     curr_dir = os.path.join(root_dir, subdir)
-    print('--------------------------------cur_dir')
-    print(curr_dir)
 
     # Look for template in current dir
     template_file = os.path.join(curr_dir, config.TEMPLATE_FILE)
@@ -52,20 +58,22 @@ def process_dir(root_dir, subdir, template):
         template = Template(template_file)
 
     # look for images in current dir to process
-    paths = config.Paths(os.path.join(args['output_dir'], subdir))
+    print(args['output_dir'])
+    print('--------------------args[\'output_dir\']------------------')
+    paths = config.Paths(os.path.join(args['output_dir']))
     exts = ('*.png', '*.jpg')
     omr_files = sorted(
         [f for ext in exts for f in glob(os.path.join(curr_dir, ext))])
 
     # Exclude marker image if exists
-    if (template and template.marker_path):
+    if template and template.marker_path:
         omr_files = [f for f in omr_files if f != template.marker_path]
 
-    subfolders = sorted([file for file in os.listdir(
+    sub_folders = sorted([file for file in os.listdir(
         curr_dir) if os.path.isdir(os.path.join(curr_dir, file))])
     if omr_files:
         args_local = args.copy()
-        if ("OverrideFlags" in template.options):
+        if "OverrideFlags" in template.options:
             args_local.update(template.options["OverrideFlags"])
         print('\n------------------------------------------------------------------')
         print(f'Processing directory "{curr_dir}" with settings- ')
@@ -84,67 +92,49 @@ def process_dir(root_dir, subdir, template):
 
         utils.setup_dirs(paths)
         output_set = setup_output(paths, template)
-        process_files(omr_files, template, args_local, output_set)
-    elif (len(subfolders) == 0):
+        print(output_set)
+        print('------------------output_set--------------')
+        process_files(omr_files, template, args_local, output_set, exam_title)
+    elif len(sub_folders) == 0:
         # the directory should have images or be non-leaf
         print(f'Note: No valid images or subfolders found in {curr_dir}')
 
     # recursively process subfolders
-    for folder in subfolders:
+    for folder in sub_folders:
         process_dir(root_dir, os.path.join(subdir, folder), template)
 
 
-def student_id_to_name(student_id):
-    disk_engine = create_engine('sqlite:///db.sqlite3')
-    df2 = pd.read_sql_table('posts_student', disk_engine)
-    df2 = df2.loc[df2['student_id'] == student_id]
-    studentname = df2.iat[0, 2]
-
-    return studentname
-
-
-def student_id_to_email(student_id):
-    disk_engine = create_engine('sqlite:///db.sqlite3')
-    df2 = pd.read_sql_table('posts_student', disk_engine)
-    df2 = df2.loc[df2['student_id'] == student_id]
-    studentemail = df2.iat[0, 3]
-
-    return studentemail
-
-
 def insert_to_db(exam_title, response, file_name):
-    # disk_engine = create_engine('sqlite:///db.sqlite3')
-    s = exam_title
-    s = s.replace('\\', '/')
-    start = 'outputs/'
-    end = '/sheets/CheckedOMRs/'
-    title = (s.split(start))[1].split(end)[0]
-    savepath = title
+    # s = exam_title
+    # s = s.replace('\\', '/')
+    # start = 'outputs/'
+    # end = '/sheets/CheckedOMRs/'
+    # title = (s.split(start))[1].split(end)[0]
+    # savepath = title
+    #
+    # if title.find('/') != -1:
+    #     start2 = '/'
+    #     end2 = '/'
+    #     exam_name = (title.split(start2))[1].split(end2)[0]
+    #     savepath = title
+    #     title = exam_name
 
-    if title.find('/') != -1:
-        start2 = '/'
-        end2 = '/'
-        exam_name = (title.split(start2))[1].split(end2)[0]
-        savepath = title
-        title = exam_name
-
-    file_name = 'outputs/' + savepath + '/sheets/CheckedOMRs/' + file_name
+    # file_name = 'outputs/' + savepath + '/sheets/CheckedOMRs/' + file_name
 
     marks_dataset = get_marks_from_dict(data=response)
-
 
     student = get_student(student_id=response.get('Roll'))
 
     if len(marks_dataset) == 40:
-        processed_marks, created = ProcessedMarks.objects.get_or_create(exam_title=title)
+        processed_marks, created = ProcessedMarks.objects.get_or_create(exam_title=exam_title)
         save_processed_marks(instance=processed_marks, processed_marks=marks_dataset)
         processed_marks.student_id = student.student_id
         processed_marks.student_name = student.student_name
-        processed_marks.processed_image = file_name
+        processed_marks.processed_image = '/40/' + exam_title + '/output/' + file_name
 
         # final marks
         exam_marks = get_marks_from_dict(
-            data=model_to_dict(get_exam(exam_title=title))
+            data=model_to_dict(get_exam(exam_title=exam_title))
         )
         processed_marks.final_marks = mark_class.count_final_marks(
             processed_marks=marks_dataset,
@@ -154,15 +144,15 @@ def insert_to_db(exam_title, response, file_name):
         processed_marks.save()
 
     elif len(marks_dataset) == 100:
-        processed_marks, created = ProcessedMarks100.objects.get_or_create(exam_title=title)
+        processed_marks, created = ProcessedMarks100.objects.get_or_create(exam_title=exam_title)
         save_processed_marks(instance=processed_marks, processed_marks=marks_dataset)
         processed_marks.student_id = student.student_id
         processed_marks.student_name = student.student_name
-        processed_marks.processed_image = file_name
+        processed_marks.processed_image = '/100/' + exam_title + '/output/' + file_name
 
         # final marks
         exam_marks = get_marks_from_dict(
-            data=model_to_dict(get_exam100(exam_title=title))
+            data=model_to_dict(get_exam100(exam_title=exam_title))
         )
         processed_marks.final_marks = mark_class.count_final_marks(
             processed_marks=marks_dataset,
@@ -178,10 +168,10 @@ def checkAndMove(error_code, filepath, filepath2):
     return True
 
     global filesMoved
-    if (not os.path.exists(filepath)):
+    if not os.path.exists(filepath):
         print('File already moved')
         return False
-    if (os.path.exists(filepath2)):
+    if os.path.exists(filepath2):
         print('ERROR : Duplicate file at ' + filepath2)
         return False
 
@@ -216,24 +206,18 @@ def processOMR(template, omrResp):
     return csvResp
 
 
-def report(
-        Status,
-        streak,
-        scheme,
-        qNo,
-        marked,
-        ans,
-        prevmarks,
-        currmarks,
-        marks):
+def report(status, streak, scheme, q_no, marked, ans, prev_marks, curr_marks, marks):
     print(
-        '%s \t %s \t\t %s \t %s \t %s \t %s \t %s ' % (qNo,
-                                                       Status,
-                                                       str(streak),
-                                                       '[' + scheme + '] ',
-                                                       (str(prevmarks) + ' + ' + str(currmarks) + ' =' + str(marks)),
-                                                       str(marked),
-                                                       str(ans)))
+        '%s \t %s \t\t %s \t %s \t %s \t %s \t %s ' % (
+            q_no,
+            status,
+            str(streak),
+            '[' + scheme + '] ',
+            (str(prev_marks) + ' + ' + str(curr_marks) + ' =' + str(marks)),
+            str(marked),
+            str(ans)
+        )
+    )
 
 
 # check sectionwise only.
@@ -263,14 +247,14 @@ def evaluate(resp, squad="H", explain=False):
             correct = bonus or (marked in ans)
             inrange = 0
 
-            if (unmarked or int(q) == firstQ):
+            if unmarked or int(q) == firstQ:
                 streak = 0
-            elif (prevcorrect == correct):
+            elif prevcorrect == correct:
                 streak += 1
             else:
                 streak = 0
 
-            if ('allNone' in scheme):
+            if 'allNone' in scheme:
                 # loop on all sectionques
                 allflag = allflag and correct
                 if (q == lastQ):
@@ -280,7 +264,7 @@ def evaluate(resp, squad="H", explain=False):
                 else:
                     currmarks = 0
 
-            elif ('Proxy' in scheme):
+            elif 'Proxy' in scheme:
                 a = int(ans[0])
                 # proximity check
                 inrange = 1 if unmarked else (
@@ -298,7 +282,7 @@ def evaluate(resp, squad="H", explain=False):
             prevmarks = marks
             marks += currmarks
 
-            if (explain):
+            if explain:
                 if bonus:
                     report('BonusQ', streak, scheme, qNo, marked,
                            ans, prevmarks, currmarks, marks)
@@ -336,25 +320,6 @@ def setup_output(paths, template):
                     'output_path', 'score'] + ns.respCols
     ns.OUTPUT_SET = []
     ns.filesObj = {}
-    ns.filesMap = {
-        "Results": paths.resultDir + 'Results_' + timeNowHrs + '.csv',
-        "MultiMarked": paths.manualDir + 'MultiMarkedFiles_.csv',
-        "Errors": paths.manualDir + 'ErrorFiles_.csv',
-        "BadRollNos": paths.manualDir + 'BadRollNoFiles_.csv'
-    }
-
-    for fileKey, fileName in ns.filesMap.items():
-        if (not os.path.exists(fileName)):
-            print("Note: Created new file: %s" % (fileName))
-            # still append mode req [THINK!]
-            ns.filesObj[fileKey] = open(fileName, 'a')
-            # Create Header Columns
-            pd.DataFrame([ns.sheetCols], dtype=str).to_csv(
-                ns.filesObj[fileKey], quoting=QUOTE_NONNUMERIC, header=False, index=False)
-        else:
-            print('Present : appending to %s' % (fileName))
-            ns.filesObj[fileKey] = open(fileName, 'a')
-
     return ns
 
 
@@ -382,7 +347,7 @@ def preliminary_check():
     #     show("Confirm : All bubbles are black",final_marked,1,1)
 
 
-def process_files(omr_files, template, args, out):
+def process_files(omr_files, template, args, out, exam_title):
     start_time = int(time())
     filesCounter = 0
     filesNotMoved = 0
@@ -395,7 +360,7 @@ def process_files(omr_files, template, args, out):
         # Prefixing a 'r' to use raw string (escape character '\' is taken
         # literally)
         finder = re.search(r'.*/(.*)/(.*)', filepath, re.IGNORECASE)
-        if (finder):
+        if finder:
             inputFolderName, filename = finder.groups()
         else:
             print("Error: Filepath not matching to Regex: " + filepath)
@@ -412,11 +377,11 @@ def process_files(omr_files, template, args, out):
 
         OMRCrop = utils.getROI(inOMR, filename, noCropping=args["noCropping"])
 
-        if (OMRCrop is None):
+        if OMRCrop is None:
             # Error OMR - could not crop
             newfilepath = out.paths.errorsDir + filename
             out.OUTPUT_SET.append([filename] + out.emptyResp)
-            if (checkAndMove(config.NO_MARKER_ERR, filepath, newfilepath)):
+            if checkAndMove(config.NO_MARKER_ERR, filepath, newfilepath):
                 err_line = [filename, filepath,
                             newfilepath, "NA"] + out.emptyResp
                 pd.DataFrame(
@@ -431,14 +396,15 @@ def process_files(omr_files, template, args, out):
         if template.marker is not None:
             OMRCrop = utils.handle_markers(OMRCrop, template.marker, filename)
 
-        if (args["setLayout"]):
+        if args["setLayout"]:
             templateLayout = utils.drawTemplateLayout(
                 OMRCrop, template, shifted=False, border=2)
             utils.show("Template Layout", templateLayout, 1, 1)
             continue
 
         # uniquify
-        file_id = inputFolderName + '_' + filename
+        # file_id = inputFolderName + '_' + filename
+        file_id = filename
         savedir = out.paths.saveMarkedDir
         OMRresponseDict, final_marked, MultiMarked, multiroll = \
             utils.readResponse(template, OMRCrop, name=file_id,
@@ -449,7 +415,7 @@ def process_files(omr_files, template, args, out):
         print("\nRead Response: \t", resp)
 
         # This evaluates and returns the score attribute
-        insert_to_db(savedir, resp, file_id)
+        insert_to_db(exam_title, resp, file_id)
         # TODO: Automatic scoring
         # score = evaluate(resp, explain=explain)
         score = 0
@@ -461,7 +427,7 @@ def process_files(omr_files, template, args, out):
         out.OUTPUT_SET.append([filename] + respArray)
 
         # TODO: Add roll number validation here
-        if (MultiMarked == 0):
+        if MultiMarked == 0:
             filesNotMoved += 1
             newfilepath = savedir + file_id
             # Enter into Results sheet-
@@ -477,33 +443,11 @@ def process_files(omr_files, template, args, out):
             print("[%d] Graded with score: %.2f" %
                   (filesCounter, score), '\t file_id: ', file_id)
             # print(filesCounter,file_id,resp['Roll'],'score : ',score)
-        else:
-            # MultiMarked file
-            print('[%d] MultiMarked, moving File: %s' %
-                  (filesCounter, file_id))
-            newfilepath = out.paths.multiMarkedDir + filename
-            if (checkAndMove(config.MULTI_BUBBLE_WARN, filepath, newfilepath)):
-                mm_line = [filename, filepath, newfilepath, "NA"] + respArray
-                pd.DataFrame(
-                    mm_line,
-                    dtype=str).T.to_csv(
-                    out.filesObj["MultiMarked"],
-                    quoting=QUOTE_NONNUMERIC,
-                    header=False,
-                    index=False)
-            # else:
-            #     TODO:  Add appropriate record handling here
-            #     pass
-
-        # flush after every 20 files for a live view
-        if (filesCounter % 20 == 0 or filesCounter == len(omr_files)):
-            for fileKey in out.filesMap.keys():
-                out.filesObj[fileKey].flush()
 
     timeChecking = round(time() - start_time, 2) if filesCounter else 1
     print('')
-    print('Total files moved        : %d ' % (filesMoved))
-    print('Total files not moved    : %d ' % (filesNotMoved))
+    print('Total files moved        : %d ' % filesMoved)
+    print('Total files not moved    : %d ' % filesNotMoved)
     print('------------------------------')
     print(
         'Total files processed    : %d (%s)' %
@@ -512,7 +456,7 @@ def process_files(omr_files, template, args, out):
                  filesMoved +
                  filesNotMoved) else 'Not Tallying!'))
 
-    if (config.showimglvl <= 0):
+    if config.showimglvl <= 0:
         print(
             '\nFinished Checking %d files in %.1f seconds i.e. ~%.1f minutes.' %
             (filesCounter, timeChecking, timeChecking / 60))
@@ -523,7 +467,7 @@ def process_files(omr_files, template, args, out):
     else:
         print("\nTotal script time :", timeChecking, "seconds")
 
-    if (config.showimglvl <= 1):
+    if config.showimglvl <= 1:
         # TODO: colorama this
         print(
             "\nTip: To see some awesome visuals, open globals.py and increase 'showimglvl'")
@@ -533,7 +477,7 @@ def process_files(omr_files, template, args, out):
     # Use this data to train as +ve feedback
     if config.showimglvl >= 0 and filesCounter > 10:
         for x in [utils.thresholdCircles]:  # ,badThresholds,veryBadPoints, mws, mbs]:
-            if (x != []):
+            if x != []:
                 x = pd.DataFrame(x)
                 print(x.describe())
                 plt.plot(range(len(x)), x)
@@ -548,7 +492,7 @@ def process_files(omr_files, template, args, out):
 def evaluate_correctness(template, out):
     # TODO: TEST_FILE WOULD BE RELATIVE TO INPUT SUBDIRECTORY NOW-
     TEST_FILE = 'inputs/OMRDataset.csv'
-    if (os.path.exists(TEST_FILE)):
+    if os.path.exists(TEST_FILE):
         print("\nStarting evaluation for: " + TEST_FILE)
 
         TEST_COLS = ['file_id'] + out.respCols
@@ -556,7 +500,7 @@ def evaluate_correctness(template, out):
             TEST_FILE, dtype=str)[TEST_COLS].replace(
             np.nan, '', regex=True).set_index('file_id')
 
-        if (np.any(y_df.index.duplicated)):
+        if np.any(y_df.index.duplicated):
             y_df_filtered = y_df.loc[~y_df.index.duplicated(keep='first')]
             print(
                 "WARNING: Found duplicate File-ids in file %s. Removed %d rows from testing data. Rows remaining: %d" %
@@ -572,7 +516,7 @@ def evaluate_correctness(template, out):
         intersection = y_df.index.intersection(x_df.index)
 
         # Checking if the merge is okay
-        if (intersection.size == x_df.index.size):
+        if intersection.size == x_df.index.size:
             y_df = y_df.loc[intersection]
             x_df['TestResult'] = (x_df == y_df).all(axis=1).astype(int)
             print(x_df.head())
@@ -646,15 +590,18 @@ args = vars(args)
 # integration
 
 class OMRChecker:
-    def __init__(self, input_dir: list):
+    def __init__(self, input_dir: list, output_dir: str):
         self.input_dir = input_dir
+        self.output_dir = output_dir
 
     def execute(self):
         if args['template']:
             args['template'] = Template(args['template'])
 
         args['input_dir'] = self.input_dir
+        args['output_dir'] = self.output_dir
 
         for root in args['input_dir']:
+            print('------------------rooooooot--------------------')
             print(root)
             process_dir(root, '', args['template'])
