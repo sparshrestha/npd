@@ -4,6 +4,7 @@ from django.core.files import File
 import os
 from distutils.dir_util import copy_tree
 
+from posts.storage import overwrite_storage
 from posts.upload_handlers import (
     upload_exam_cover_to,
     upload_exam_template_to,
@@ -31,16 +32,19 @@ class Exams(models.Model):
     title = models.CharField(max_length=20, unique=True)
     cover = models.ImageField(
         upload_to=upload_exam_cover_to,
+        storage=overwrite_storage,
         verbose_name="Answer Sheet"
     )
     template = models.FileField(
         upload_to=upload_exam_template_to,
         blank=True,
+        storage=overwrite_storage,
         default="template.json"
     )
     marker = models.ImageField(
         upload_to=upload_exam_marker_to,
         blank=True,
+        storage=overwrite_storage,
         default="omr_marker.jpg"
     )
     q1 = models.CharField(choices=CHOICES, max_length=10, null=True, blank=True, verbose_name="Answer key:Q1")
@@ -120,7 +124,10 @@ class ProcessedMarks(models.Model):
     exam_title = models.CharField(max_length=20, unique=True)
     student_id = models.CharField(max_length=15, blank=True)
     student_name = models.CharField(max_length=50, blank=True)
-    processed_image = models.ImageField(upload_to=upload_processed_marks_image_to)
+    processed_image = models.ImageField(
+        upload_to=upload_processed_marks_image_to,
+        storage=overwrite_storage,
+    )
     final_marks = models.CharField(max_length=20, null=True, blank=True)
     q1 = models.CharField(max_length=4, null=True)
     q2 = models.CharField(max_length=4, null=True)
@@ -180,16 +187,19 @@ class Exams100(models.Model):
     title = models.CharField(max_length=20, unique=True)
     cover = models.ImageField(
         upload_to=upload_exam100_cover_to,
+        storage=overwrite_storage,
         verbose_name="Answer Sheet"
     )
     template = models.FileField(
         upload_to=upload_exam100_template_to,
         blank=True,
+        storage=overwrite_storage,
         default="template.json"
     )
     marker = models.ImageField(
         upload_to=upload_exam100_marker_to,
         blank=True,
+        storage=overwrite_storage,
         default="omr_marker.jpg"
     )
     q1 = models.CharField(choices=CHOICES, max_length=10, null=True, blank=True, verbose_name="Answer key:Q1")
@@ -318,7 +328,8 @@ class ProcessedMarks100(models.Model):
     student_id = models.CharField(max_length=15, default='')
     student_name = models.CharField(max_length=50, default='')
     processed_image = models.ImageField(
-        upload_to=upload_100processed_marks_image_to
+        upload_to=upload_100processed_marks_image_to,
+        storage=overwrite_storage,
     )
     final_marks = models.CharField(max_length=20, null=True, blank=True)
     q1 = models.CharField(max_length=4, null=True)
