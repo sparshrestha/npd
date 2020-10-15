@@ -1,21 +1,16 @@
+from django.core.exceptions import ValidationError
 from django.http import HttpResponseRedirect
 from django.views.generic import ListView, CreateView
 from django.urls import reverse_lazy, reverse
 
-from GFoody.settings import BASE_DIR
 from OMRchecker import OMRChecker, student_id_to_email
 from .forms import Exams100Form, ExamsForm
 from .models import Exams100, Exams, Student, ProcessedMarks
-from django.http import HttpResponse
-from django.core.mail import send_mail, EmailMessage
+from django.core.mail import EmailMessage
 from django.conf import settings
 from sqlalchemy import create_engine
-import sqlite3
-import numpy as np
 import pandas as pd
-import re
-import os
-import cv2
+
 
 from .usecases import ProcessAllExamsUseCase
 
@@ -135,3 +130,27 @@ class CreateExamView100(CreateView):
 def retotal_processed40(request):
     print(request)
     print('afasssssssssssssssssssssssss')
+
+
+def process_exam(request, exam_id):
+    try:
+        exam = Exams.objects.get(pk=exam_id)
+    except Exams.DoesNotExist:
+        raise ValidationError('Invalid Exam Id.')
+    OMRChecker(
+        input_dir=[settings.MEDIA_ROOT + '/40/' + exam.title + '/input'],
+        output_dir=settings.MEDIA_ROOT + '/40/' + exam.title + '/output'
+    ).execute()
+    return HttpResponseRedirect('/admin/posts/exams')
+
+
+def process_exam100(request, exam_id):
+    try:
+        exam = Exams100.objects.get(pk=exam_id)
+    except Exams100.DoesNotExist:
+        raise ValidationError('Invalid Exam Id.')
+    OMRChecker(
+        input_dir=[settings.MEDIA_ROOT + '/100/' + exam.title + '/input'],
+        output_dir=settings.MEDIA_ROOT + '/100/' + exam.title + '/output'
+    ).execute()
+    return HttpResponseRedirect('/admin/posts/exams')

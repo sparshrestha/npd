@@ -60,5 +60,17 @@ urlpatterns = [
         'processed40/<int:id>/retotal',
         views.retotal_processed40,
         name='posts_processedmarks_retotal'
+    ),
+    # process exam
+    path(
+        'exam/<int:exam_id>/process',
+        views.process_exam,
+        name='process_exam'
+    ),
+    # process exam100
+    path(
+        'exam100/<int:exam_id>/process',
+        views.process_exam100,
+        name='process_exam100'
     )
 ]

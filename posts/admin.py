@@ -143,6 +143,22 @@ class ProcessedMarks100Admin(admin.ModelAdmin):
     readonly_fields = ('student_id', 'admin_photo', 'exam_title', 'student_name')
 
 
-admin.site.register(Exams)
+@admin.register(Exams)
+class ExamsAdmin(admin.ModelAdmin):
+    change_form_template = 'admin/exam_change_form.html'
+
+    list_display = [
+        'title',
+    ]
+
+
+@admin.register(Exams100)
+class Exams100Admin(admin.ModelAdmin):
+    change_form_template = 'admin/exam100_change_form.html'
+
+    list_display = [
+        'title',
+    ]
+
+
 admin.site.register(Student)
-admin.site.register(Exams100)
