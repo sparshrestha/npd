@@ -18,7 +18,7 @@ from django.forms import model_to_dict
 
 from OMRchecker import config, utils
 from OMRchecker.template import Template
-from sqlalchemy import create_engine
+# from sqlalchemy import create_engine
 
 from posts.admin import MarksForm
 from posts.models import ProcessedMarks, ProcessedMarks100
@@ -35,13 +35,13 @@ mark_class = MarksForm()
 # init()
 # from colorama import Fore, Back, Style
 
-def student_id_to_email(student_id):
-    disk_engine = create_engine('sqlite:///db.sqlite3')
-    df2 = pd.read_sql_table('posts_student', disk_engine)
-    df2 = df2.loc[df2['student_id'] == student_id]
-    studentemail = df2.iat[0, 3]
-
-    return studentemail
+# def student_id_to_email(student_id):
+#     disk_engine = create_engine('sqlite:///db.sqlite3')
+#     df2 = pd.read_sql_table('posts_student', disk_engine)
+#     df2 = df2.loc[df2['student_id'] == student_id]
+#     studentemail = df2.iat[0, 3]
+#
+#     return studentemail
 
 
 def process_dir(root_dir, subdir, template):
