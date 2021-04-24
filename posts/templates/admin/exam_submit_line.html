@@ -10,7 +10,7 @@
 {% if show_save_and_add_another %}<input type="submit" value="{% trans 'Save and add another' %}" name="_addanother">{% endif %}
 {% if show_save_and_continue %}<input type="submit" value="{% if can_change %}{% trans 'Save and continue editing' %}{% else %}{% trans 'Save and view' %}{% endif %}" name="_continue">{% endif %}
     {% if show_delete_link and original %}
-    <a href="{% url 'process_exam' original.pk%}"
+    <a href="{% url 'process_exam' original.pk %}"
        style="background: green"
        class="closelink">
         {% trans 'Process' %}

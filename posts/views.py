@@ -136,7 +136,7 @@ def process_exam(request, exam_id):
         input_dir=[settings.MEDIA_ROOT + '/40/' + exam.title + '/input'],
         output_dir=settings.MEDIA_ROOT + '/40/' + exam.title + '/output'
     ).execute()
-    return HttpResponseRedirect('/admin/posts/exams')
+    return HttpResponseRedirect('/posts/exams')
 
 
 def process_exam100(request, exam_id):
@@ -148,4 +148,4 @@ def process_exam100(request, exam_id):
         input_dir=[settings.MEDIA_ROOT + '/100/' + exam.title + '/input'],
         output_dir=settings.MEDIA_ROOT + '/100/' + exam.title + '/output'
     ).execute()
-    return HttpResponseRedirect('/admin/posts/exams')
+    return HttpResponseRedirect('/posts/exams100')
