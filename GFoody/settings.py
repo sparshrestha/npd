@@ -34,9 +34,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'accounts.apps.AccountsConfig',
     'posts.apps.PostsConfig',
     'django_cleanup',
+    'mail_templated',
 
 ]
 
@@ -119,18 +119,17 @@ STATIC_URL = '/static/'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
 
-EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'local_mailbox')
-
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# Email settings
+# EMAIL
+# ------------------------------------------------------------------------------
+DEFAULT_FROM_EMAIL = "OMR <no-reply@omr.com>"
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
+EMAIL_SUBJECT_PREFIX = "[OMR]"
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'mail.npd.com.np'
-EMAIL_HOST_USER = 'admin@npd.com.np'
-EMAIL_HOST_PASSWORD = 'hetauda9'
-DEFAULT_FROM_EMAIL = 'admin@npd.com.np'
-SERVER_EMAIL = 'admin@npd.com.np'
+EMAIL_HOST = 'smtp.zoho.com'
+EMAIL_HOST_USER = 'no-reply@omr.com'
+EMAIL_HOST_PASSWORD = 'password'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True

@@ -81,5 +81,17 @@ urlpatterns = [
         'exam100/<int:exam_id>/process',
         views.process_exam100,
         name='process_exam100'
+    ),
+    # send feedback for exam
+    path(
+        'exam/<int:exam_id>/feedback',
+        views.SendExamFeedbackView.as_view(),
+        name='exam_feedback'
+    ),
+    # send feedback for exam
+    path(
+        'exam100/<int:exam_id>/feedback',
+        views.SendExam100FeedbackView.as_view(),
+        name='exam100_feedback'
     )
 ]

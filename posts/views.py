@@ -2,12 +2,14 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
+from django.views import View
 from django.views.generic import ListView, CreateView
 
 from OMRchecker import OMRChecker
 from .forms import Exams100Form, ExamsForm
+from .mixins import Exam40Mixin, Exam100Mixin
 from .models import Exams100, Exams, Student, ProcessedMarks
-from .usecases import ProcessAllExamsUseCase
+from .usecases import ProcessAllExamsUseCase, SendExamFeedbackUseCase, SendExam100FeedbackUseCase
 
 
 class HomePage(ListView):
@@ -137,6 +139,22 @@ def process_exam(request, exam_id):
         output_dir=settings.MEDIA_ROOT + '/40/' + exam.title + '/output'
     ).execute()
     return HttpResponseRedirect('/posts/exams')
+
+
+class SendExamFeedbackView(View, Exam40Mixin):
+    def get(self, *args, **kwargs):
+        SendExamFeedbackUseCase(
+            exam=self.get_exam()
+        ).execute()
+        return HttpResponseRedirect('/posts/exams')
+
+
+class SendExam100FeedbackView(View, Exam100Mixin):
+    def get(self, *args, **kwargs):
+        SendExam100FeedbackUseCase(
+            exam=self.get_exam()
+        ).execute()
+        return HttpResponseRedirect('/posts/exams100')
 
 
 def process_exam100(request, exam_id):

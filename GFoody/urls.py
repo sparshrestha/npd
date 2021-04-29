@@ -28,3 +28,7 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+admin.site.site_header = 'Server Based OMR System Admin Panel'
+admin.site.index_title = 'Manage Users|Groups|Exams'
+admin.site.site_title = 'Admin Panel'

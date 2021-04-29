@@ -111,10 +111,9 @@ class ProcessedMarksForm(forms.ModelForm):
         model = ProcessedMarks
         fields = [
             'processed_image',
-            'student_id',
-            'student_name',
+            'student',
             'final_marks',
-            'exam_title',
+            'exam',
             'q1',
             'q2',
             'q3',
@@ -378,10 +377,9 @@ class ProcessedMarks100Form(forms.ModelForm):
         model = ProcessedMarks100
         fields = [
             'processed_image',
-            'student_id',
-            'student_name',
+            'student',
             'final_marks',
-            'exam_title',
+            'exam',
             'q1',
             'q2',
             'q3',

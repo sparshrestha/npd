@@ -121,9 +121,16 @@ class ProcessedMarks(models.Model):
     class Meta:
         verbose_name_plural = 'Processed Marks'
 
-    exam_title = models.CharField(max_length=20, unique=True)
-    student_id = models.CharField(max_length=15, blank=True)
-    student_name = models.CharField(max_length=50, blank=True)
+    exam = models.ForeignKey(
+        Exams,
+        null=True,
+        on_delete=models.CASCADE
+    )
+    student = models.ForeignKey(
+        Student,
+        null=True,
+        on_delete=models.CASCADE
+    )
     processed_image = models.ImageField(
         upload_to=upload_processed_marks_image_to,
         storage=overwrite_storage,
@@ -177,7 +184,7 @@ class ProcessedMarks(models.Model):
     admin_photo.allow_tags = True
 
     def __str__(self):
-        return '%s Student %s %s' % (self.exam_title, self.student_id, self.student_name)
+        return '%s Student %s %s' % (self.exam.title, self.student_id, self.student.student_name)
 
 
 class Exams100(models.Model):
@@ -324,9 +331,16 @@ class ProcessedMarks100(models.Model):
     class Meta:
         verbose_name_plural = 'Processed Marks 100'
 
-    exam_title = models.CharField(max_length=20)
-    student_id = models.CharField(max_length=15, default='')
-    student_name = models.CharField(max_length=50, default='')
+    exam = models.ForeignKey(
+        Exams100,
+        null=True,
+        on_delete=models.CASCADE
+    )
+    student = models.ForeignKey(
+        Student,
+        null=True,
+        on_delete=models.CASCADE
+    )
     processed_image = models.ImageField(
         upload_to=upload_100processed_marks_image_to,
         storage=overwrite_storage,
@@ -440,4 +454,4 @@ class ProcessedMarks100(models.Model):
     admin_photo.allow_tags = True
 
     def __str__(self):
-        return '%s Student %s %s' % (self.exam_title, self.student_id, self.student_name)
+        return '%s Student %s %s' % (self.exam.title, self.student_id, self.student.student_name)

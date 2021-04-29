@@ -126,15 +126,15 @@ def insert_to_db(exam_title, response, file_name):
     student = get_student(student_id=response.get('Roll'))
 
     if len(marks_dataset) == 40:
-        processed_marks, created = ProcessedMarks.objects.get_or_create(exam_title=exam_title)
+        exam = get_exam(exam_title=exam_title)
+        processed_marks, created = ProcessedMarks.objects.get_or_create(exam=exam)
         save_processed_marks(instance=processed_marks, processed_marks=marks_dataset)
-        processed_marks.student_id = student.student_id
-        processed_marks.student_name = student.student_name
+        processed_marks.student = student
         processed_marks.processed_image = '/40/' + exam_title + '/output/' + file_name
 
         # final marks
         exam_marks = get_marks_from_dict(
-            data=model_to_dict(get_exam(exam_title=exam_title))
+            data=model_to_dict(exam)
         )
         processed_marks.final_marks = mark_class.count_final_marks(
             processed_marks=marks_dataset,
