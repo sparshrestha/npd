@@ -124,12 +124,12 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # EMAIL
 # ------------------------------------------------------------------------------
-DEFAULT_FROM_EMAIL = "OMR <no-reply@omr.com>"
+DEFAULT_FROM_EMAIL = "Learning Sansar <no-reply@learningsansar.com>"
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
-EMAIL_SUBJECT_PREFIX = "[OMR]"
+EMAIL_SUBJECT_PREFIX = "[Learning Sansar]"
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.zoho.com'
-EMAIL_HOST_USER = 'no-reply@omr.com'
-EMAIL_HOST_PASSWORD = 'password'
+EMAIL_HOST_USER = 'no-reply@learningsansar.com'
+EMAIL_HOST_PASSWORD = 'sansar101'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True

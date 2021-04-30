@@ -93,5 +93,17 @@ urlpatterns = [
         'exam100/<int:exam_id>/feedback',
         views.SendExam100FeedbackView.as_view(),
         name='exam100_feedback'
+    ),
+    # download excel report
+    path(
+        'exam/<int:exam_id>/excel/download',
+        views.DownloadExamExcelReportView.as_view(),
+        name='exam_excel_report'
+    ),
+    # download excel report
+    path(
+        'exam100/<int:exam_id>/excel/download',
+        views.DownloadExam100ExcelReportView.as_view(),
+        name='exam100_excel_report'
     )
 ]
