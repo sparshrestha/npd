@@ -50,7 +50,7 @@ class ProcessedMarksForm(forms.ModelForm, MarksForm):
 
     def save(self, commit=True):
         instance = super().save(commit=commit)
-        self.retotal(instance=instance, exam=self.exam)
+        self.retotal(instance=instance, exam=instance.exam)
         return instance
 
 
@@ -99,12 +99,7 @@ class ProcessedMarks100Form(forms.ModelForm, MarksForm):
 
     def save(self, commit=True):
         instance = super().save(commit=commit)
-        try:
-            exam = Exams100.objects.get(title=instance.exam_title)
-        except Exams100.DoesNotExist:
-            raise ValidationError(_('Exam Not Found.'))
-        self.retotal(instance=instance, exam=exam)
-
+        self.retotal(instance=instance, exam=instance.exam)
         return instance
 
 
