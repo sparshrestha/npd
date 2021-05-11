@@ -1,28 +1,22 @@
-from glob import glob
+import argparse
+import os
+import re
 from csv import QUOTE_NONNUMERIC
+from glob import glob
 from time import localtime, strftime, time
 
-import re
-import os
 import cv2
-import argparse
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-
-
-# Local globals
-from django.conf import settings
-from django.core.files import File
 from django.forms import model_to_dict
 
 from OMRchecker import config, utils
 from OMRchecker.template import Template
-# from sqlalchemy import create_engine
-
 from posts.admin import MarksForm
 from posts.models import ProcessedMarks, ProcessedMarks100
 from posts.utils import get_marks_from_dict, get_student, save_processed_marks, get_exam, get_exam100
+
 
 filesMoved = 0
 filesNotMoved = 0
@@ -146,8 +140,7 @@ def insert_to_db(exam_title, response, file_name):
     elif len(marks_dataset) == 100:
         processed_marks, created = ProcessedMarks100.objects.get_or_create(exam_title=exam_title)
         save_processed_marks(instance=processed_marks, processed_marks=marks_dataset)
-        processed_marks.student_id = student.student_id
-        processed_marks.student_name = student.student_name
+        processed_marks.student = student
         processed_marks.processed_image = '/100/' + exam_title + '/output/' + file_name
 
         # final marks

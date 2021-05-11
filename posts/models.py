@@ -184,7 +184,7 @@ class ProcessedMarks(models.Model):
     admin_photo.allow_tags = True
 
     def __str__(self):
-        return '%s Student %s %s' % (self.exam.title, self.student_id, self.student.student_name)
+        return 'Student %s %s' % (self.student_id, self.student.student_name)
 
 
 class Exams100(models.Model):

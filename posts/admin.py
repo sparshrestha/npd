@@ -57,7 +57,7 @@ class ProcessedMarksForm(forms.ModelForm, MarksForm):
 @admin.register(ProcessedMarks)
 class ProcessedMarksAdmin(admin.ModelAdmin):
     form = ProcessedMarksForm
-    change_form_template = 'admin/custom_change_form.html'
+    change_form_template = 'admin/processed_marks_change_form.html'
 
     fields = (
         'exam', 'student', 'admin_photo', 'final_marks', 'q1',
@@ -106,7 +106,7 @@ class ProcessedMarks100Form(forms.ModelForm, MarksForm):
 @admin.register(ProcessedMarks100)
 class ProcessedMarks100Admin(admin.ModelAdmin):
     form = ProcessedMarks100Form
-    change_form_template = 'admin/custom_change_form.html'
+    change_form_template = 'admin/processed_marks_change_form.html'
 
     fields = (
         'exam', 'student', 'admin_photo', 'final_marks', 'q1',
