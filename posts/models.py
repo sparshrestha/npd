@@ -114,7 +114,7 @@ class Student(models.Model):
     student_email = models.CharField(max_length=200)
 
     def __str__(self):
-        return self.student_name
+        return self.student_id
 
 
 class ProcessedMarks(models.Model):

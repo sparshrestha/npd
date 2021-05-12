@@ -14,7 +14,7 @@ from django.forms import model_to_dict
 from OMRchecker import config, utils
 from OMRchecker.template import Template
 from posts.admin import MarksForm
-from posts.models import ProcessedMarks, ProcessedMarks100
+from posts.models import ProcessedMarks, ProcessedMarks100, Student
 from posts.utils import get_marks_from_dict, get_student, save_processed_marks, get_exam, get_exam100
 
 
@@ -55,7 +55,7 @@ def process_dir(root_dir, subdir, template):
     print(args['output_dir'])
     print('--------------------args[\'output_dir\']------------------')
     paths = config.Paths(os.path.join(args['output_dir']))
-    exts = ('*.png', '*.jpg')
+    exts = ('*.png', '*.jpg', '*.jpeg')
     omr_files = sorted(
         [f for ext in exts for f in glob(os.path.join(curr_dir, ext))])
 
@@ -116,14 +116,12 @@ def insert_to_db(exam_title, response, file_name):
     # file_name = 'outputs/' + savepath + '/sheets/CheckedOMRs/' + file_name
 
     marks_dataset = get_marks_from_dict(data=response)
-
-    student = get_student(student_id=response.get('Roll'))
+    student, _created = Student.objects.get_or_create(student_id=response.get('Roll'))
 
     if len(marks_dataset) == 40:
         exam = get_exam(exam_title=exam_title)
-        processed_marks, created = ProcessedMarks.objects.get_or_create(exam=exam)
+        processed_marks, created = ProcessedMarks.objects.get_or_create(exam=exam, student=student)
         save_processed_marks(instance=processed_marks, processed_marks=marks_dataset)
-        processed_marks.student = student
         processed_marks.processed_image = '/40/' + exam_title + '/output/' + file_name
 
         # final marks
@@ -138,9 +136,9 @@ def insert_to_db(exam_title, response, file_name):
         processed_marks.save()
 
     elif len(marks_dataset) == 100:
-        processed_marks, created = ProcessedMarks100.objects.get_or_create(exam_title=exam_title)
+        exam = get_exam100(exam_title=exam_title)
+        processed_marks, created = ProcessedMarks100.objects.get_or_create(exam=exam, student=student)
         save_processed_marks(instance=processed_marks, processed_marks=marks_dataset)
-        processed_marks.student = student
         processed_marks.processed_image = '/100/' + exam_title + '/output/' + file_name
 
         # final marks

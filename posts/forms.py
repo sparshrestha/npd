@@ -1,6 +1,15 @@
+from io import BytesIO, StringIO
+
 from django import forms
+from django.conf import settings
+from django.core.exceptions import ValidationError
+from django.core.files.base import ContentFile, File
+from django.core.files.storage import default_storage, FileSystemStorage
+from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.utils.translation import gettext_lazy as _
+from pdf2image import convert_from_bytes
+
 from .models import Exams, Student, ProcessedMarks, CHOICES, Exams100, ProcessedMarks100
-from django.utils.safestring import mark_safe
 
 
 class ExamsForm(forms.ModelForm):
@@ -368,7 +377,6 @@ class Exams100Form(forms.ModelForm):
             'q99',
             'q100'
 
-
         ]
 
 
@@ -481,3 +489,101 @@ class ProcessedMarks100Form(forms.ModelForm):
             'q99',
             'q100'
         ]
+
+
+class ExamsAdminForm(forms.ModelForm):
+    answer_sheet = forms.FileField()
+
+    class Meta:
+        model = Exams
+        fields = [
+                     'title',
+                     'template',
+                     'marker',
+                     'answer_sheet'
+                 ] + [
+                     'q{}'.format(index) for index in range(1, 41)
+                 ]
+
+    def save(self, commit=True):
+        pdf = self.cleaned_data.pop('answer_sheet')
+        images = convert_from_bytes(pdf.file.read(), fmt='jpeg')
+        for index, image in enumerate(images):
+            image_name = 'test40_{}.jpeg'.format(index)
+            store_path = '{}/40/{}/input/sheets/{}'.format(
+                settings.MEDIA_ROOT,
+                self.cleaned_data.get('title'),
+                image_name
+            )
+            default_storage.save(store_path, self._file(image, image_name))
+        obj = super(ExamsAdminForm, self).save(commit)
+        return obj
+
+    def clean_answer_sheet(self):
+        answer_sheet = self.cleaned_data.get('answer_sheet')
+        if answer_sheet.content_type != 'application/pdf':
+            raise ValidationError({
+                'answer_sheet': _('Only Pdf are allowed.')
+            })
+        return answer_sheet
+
+    def _file(self, image, file_name):
+        thumb_io = BytesIO()
+        image.save(thumb_io, format='JPEG')
+        return InMemoryUploadedFile(
+            thumb_io,
+            None,
+            file_name,
+            'image/jpeg',
+            None,
+            None
+        )
+
+
+class Exams100AdminForm(forms.ModelForm):
+    answer_sheet = forms.FileField()
+
+    class Meta:
+        model = Exams100
+        fields = [
+                     'title',
+                     'template',
+                     'marker',
+                     'answer_sheet'
+                 ] + [
+                     'q{}'.format(index) for index in range(1, 101)
+                 ]
+
+    def save(self, commit=True):
+        pdf = self.cleaned_data.pop('answer_sheet')
+        images = convert_from_bytes(pdf.file.read(), fmt='jpeg')
+        for index, image in enumerate(images):
+            image_name = 'test100_{}.jpeg'.format(index)
+            store_path = '{}/100/{}/input/sheets/{}'.format(
+                settings.MEDIA_ROOT,
+                self.cleaned_data.get('title'),
+                image_name
+            )
+            default_storage.save(store_path, self._file(image, image_name))
+        obj = super(Exams100AdminForm, self).save(commit)
+        return obj
+
+    def clean_answer_sheet(self):
+        answer_sheet = self.cleaned_data.get('answer_sheet')
+        if answer_sheet.content_type != 'application/pdf':
+            raise ValidationError({
+                'answer_sheet': _('Only Pdf are allowed.')
+            })
+        return answer_sheet
+
+    def _file(self, image, file_name):
+        thumb_io = BytesIO()
+        image.save(thumb_io, format='JPEG')
+        return InMemoryUploadedFile(
+            thumb_io,
+            None,
+            file_name,
+            'image/jpeg',
+            None,
+            None
+        )

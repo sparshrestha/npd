@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.forms import model_to_dict
 from django.utils.translation import gettext_lazy as _
 
+from .forms import ExamsAdminForm, Exams100AdminForm
 from .models import (
     Exams,
     Student,
@@ -138,6 +139,7 @@ class ProcessedMarks100Admin(admin.ModelAdmin):
 @admin.register(Exams)
 class ExamsAdmin(admin.ModelAdmin):
     change_form_template = 'admin/exam_change_form.html'
+    form = ExamsAdminForm
 
     list_display = [
         'title',
@@ -147,6 +149,7 @@ class ExamsAdmin(admin.ModelAdmin):
 @admin.register(Exams100)
 class Exams100Admin(admin.ModelAdmin):
     change_form_template = 'admin/exam100_change_form.html'
+    form = Exams100AdminForm
 
     list_display = [
         'title',
